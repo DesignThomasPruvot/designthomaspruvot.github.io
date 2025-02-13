@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio PDF</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    /* Fond d'écran fixe avec Boisbrule.png, centré et étendu tout en gardant ses proportions */
+    body {
+      background: url('Boisbrule.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+    }
+    /* Conteneur du PDF : 75% de la largeur et 100% de la hauteur sur ordinateur */
+    #pdf-container {
+      width: 75vw;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    /* Chaque page PDF (canvas) : centré horizontalement avec une marge inférieure de 19px (5mm) */
+    canvas {
+      display: block;
+      margin: 0 auto 19px auto;
+    }
+    /* Pour mobiles/tablettes : ajustement à 95% de largeur et 90% de hauteur */
+    @media (max-width: 768px) {
+      #pdf-container {
+        width: 95vw;
+        height: 90vh;
+      }
+    }
+  </style>
+  <!-- Inclusion de PDF.js depuis le CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+  <div id="pdf-container"></div>
+  
+  <script>
+    const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
+    const container = document.getElementById('pdf-container');
+
+    function renderPDF() {
+      // Vider le conteneur pour éviter les doublons lors d'un redimensionnement
+      container.innerHTML = '';
+
+      pdfjsLib.getDocument(url).promise.then(pdf => {
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          pdf.getPage(pageNum).then(page => {
+            // Dimensions natives de la page (scale = 1)
+            const initialViewport = page.getViewport({ scale: 1 });
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            // Calcul du facteur d'échelle pour remplir le conteneur (upscaling autorisé)
+            const scale = Math.min(containerWidth / initialViewport.width, containerHeight / initialViewport.height);
+            const viewport = page.getViewport({ scale: scale });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const context = canvas.getContext('2d');
+
+            page.render({
+              canvasContext: context,
+              viewport: viewport
+            });
+            container.appendChild(canvas);
+          });
+        }
+      }).catch(error => {
+        console.error("Erreur lors du chargement du PDF :", error);
+      });
+    }
+
+    renderPDF();
+    window.addEventListener('resize', renderPDF);
+  </script>
+</body>
+</html>
