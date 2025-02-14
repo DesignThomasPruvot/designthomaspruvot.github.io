@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -28,6 +29,7 @@
       margin: 0 auto 19px auto;
       max-width: 100%;
       height: auto;
+      image-rendering: auto; /* Lissage de l'image pour les polices */
     }
     @media (max-width: 768px) {
       #pdf-container {
@@ -52,9 +54,9 @@
           pdf.getPage(pageNum).then(page => {
             const viewport = page.getViewport({ scale: 1 });
 
-            // Calcul dynamique du facteur de mise à l'échelle en tenant compte de la densité de pixels de l'écran
+            // Calcul dynamique du facteur de mise à l'échelle
             const scaleFactor = Math.min(container.clientWidth / viewport.width, container.clientHeight / viewport.height);
-            const scale = scaleFactor * window.devicePixelRatio;  // Améliorer la densité du rendu sur appareils retina
+            const scale = scaleFactor * window.devicePixelRatio;  // Amélioration de la densité de rendu sur appareils Retina
 
             const scaledViewport = page.getViewport({ scale: scale });
 
@@ -67,6 +69,7 @@
             canvas.style.width = `${scaledViewport.width / window.devicePixelRatio}px`;
             canvas.style.height = `${scaledViewport.height / window.devicePixelRatio}px`;
 
+            // Rendu du PDF avec l'amélioration de l'anti-aliasing
             page.render({
               canvasContext: context,
               viewport: scaledViewport
