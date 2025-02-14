@@ -1,17 +1,50 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portfolio PDF</title>
+  <title>English Portfolio</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
-    /* Fond d'écran fixe avec Boisbrule.png, centré et étendu tout en gardant ses proportions */
+
+    /* Chargement des polices */
+    @font-face {
+      font-family: 'Poppins';
+      src: url('Poppins-Light.woff2') format('woff2'),
+           url('Poppins-Light.woff') format('woff');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Poppins';
+      src: url('Poppins-Regular.woff2') format('woff2'),
+           url('Poppins-Regular.woff') format('woff');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Exo2';
+      src: url('Exo2-Light.woff2') format('woff2'),
+           url('Exo2-Light.woff') format('woff');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* Application de la police principale */
     body {
+      font-family: 'Poppins', 'Exo2', sans-serif;
       background: url('Boisbrule.png') no-repeat center center fixed;
       background-size: cover;
       display: flex;
@@ -19,18 +52,21 @@
       align-items: center;
       overflow: auto;
     }
+
     /* Conteneur du PDF : 75% de la largeur et 100% de la hauteur sur ordinateur */
     #pdf-container {
       width: 75vw;
       height: 100vh;
       overflow-y: auto;
     }
+
     /* Chaque page PDF (canvas) : centré horizontalement avec une marge inférieure de 19px (5mm) */
     canvas {
       display: block;
       margin: 0 auto 19px auto;
     }
-    /* Pour mobiles/tablettes : ajustement à 95% de largeur et 90% de hauteur */
+
+    /* Adaptation pour mobiles/tablettes */
     @media (max-width: 768px) {
       #pdf-container {
         width: 95vw;
@@ -45,7 +81,7 @@
   <div id="pdf-container"></div>
   
   <script>
-    const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
+    const url = 'EngPortfolio.pdf'; // Chemin vers le PDF anglais
     const container = document.getElementById('pdf-container');
 
     function renderPDF() {
@@ -76,7 +112,7 @@
           });
         }
       }).catch(error => {
-        console.error("Erreur lors du chargement du PDF :", error);
+        console.error("Error loading the PDF:", error);
       });
     }
 
