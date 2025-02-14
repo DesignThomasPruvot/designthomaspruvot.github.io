@@ -14,35 +14,33 @@
       text-rendering: optimizeLegibility;
     }
 
-    /* Chargement des polices */
+    /* Déclaration des polices */
     @font-face {
       font-family: 'Poppins';
-      src: url('Poppins-Light.woff2') format('woff2'),
-           url('Poppins-Light.woff') format('woff');
+      src: url('fonts/Poppins-Light.woff2') format('woff2'),
+           url('fonts/Poppins-Light.woff') format('woff');
       font-weight: 300;
       font-style: normal;
       font-display: swap;
     }
-
     @font-face {
       font-family: 'Poppins';
-      src: url('Poppins-Regular.woff2') format('woff2'),
-           url('Poppins-Regular.woff') format('woff');
+      src: url('fonts/Poppins-Regular.woff2') format('woff2'),
+           url('fonts/Poppins-Regular.woff') format('woff');
       font-weight: 400;
       font-style: normal;
       font-display: swap;
     }
-
     @font-face {
       font-family: 'Exo2';
-      src: url('Exo2-Light.woff2') format('woff2'),
-           url('Exo2-Light.woff') format('woff');
+      src: url('fonts/Exo2-Light.woff2') format('woff2'),
+           url('fonts/Exo2-Light.woff') format('woff');
       font-weight: 300;
       font-style: normal;
       font-display: swap;
     }
 
-    /* Application de la police principale */
+    /* Application des polices et styles globaux */
     body {
       font-family: 'Poppins', 'Exo2', sans-serif;
       background: url('Boisbrule.png') no-repeat center center fixed;
@@ -51,16 +49,17 @@
       justify-content: center;
       align-items: center;
       overflow: auto;
+      text-shadow: 0 0 1px rgba(0,0,0,0.2);
     }
 
-    /* Conteneur du PDF : 75% de la largeur et 100% de la hauteur sur ordinateur */
+    /* Conteneur du PDF : 75% de la largeur et 100% de la hauteur sur desktop */
     #pdf-container {
       width: 75vw;
       height: 100vh;
-      overflow-y: auto;
+      overflow: auto;
     }
 
-    /* Chaque page PDF (canvas) : centré horizontalement avec une marge inférieure de 19px (5mm) */
+    /* Chaque page PDF (canvas) : centrée horizontalement avec une marge inférieure de 19px (~5mm) */
     canvas {
       display: block;
       margin: 0 auto 19px auto;
@@ -72,33 +71,32 @@
         width: 95vw;
         height: 90vh;
       }
+      body {
+        font-weight: 400;
+        text-shadow: 0 0 1px rgba(0,0,0,0.3);
+      }
     }
   </style>
-  <!-- Inclusion de PDF.js depuis le CDN -->
+  <!-- Inclusion de PDF.js via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 </head>
 <body>
   <div id="pdf-container"></div>
   
   <script>
-    const url = 'EngPortfolio.pdf'; // Chemin vers le PDF anglais
+    const url = 'EngPortfolio.pdf'; // Chemin vers la version anglaise du PDF
     const container = document.getElementById('pdf-container');
 
     function renderPDF() {
-      // Vider le conteneur pour éviter les doublons lors d'un redimensionnement
+      // Vider le conteneur pour éviter les doublons lors du redimensionnement
       container.innerHTML = '';
 
       pdfjsLib.getDocument(url).promise.then(pdf => {
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           pdf.getPage(pageNum).then(page => {
-            // Dimensions natives de la page (scale = 1)
-            const initialViewport = page.getViewport({ scale: 1 });
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
-            // Calcul du facteur d'échelle pour remplir le conteneur (upscaling autorisé)
-            const scale = Math.min(containerWidth / initialViewport.width, containerHeight / initialViewport.height);
+            // Forcer l'échelle à 1 (zoom 100% de la taille native)
+            const scale = 1;
             const viewport = page.getViewport({ scale: scale });
-
             const canvas = document.createElement('canvas');
             canvas.width = viewport.width;
             canvas.height = viewport.height;
