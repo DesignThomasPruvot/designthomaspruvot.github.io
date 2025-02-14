@@ -13,67 +13,31 @@
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
     }
-
-    /* Déclaration des polices */
-    @font-face {
-      font-family: 'Poppins';
-      src: url('fonts/Poppins-Light.woff2') format('woff2'),
-           url('fonts/Poppins-Light.woff') format('woff');
-      font-weight: 300;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'Poppins';
-      src: url('fonts/Poppins-Regular.woff2') format('woff2'),
-           url('fonts/Poppins-Regular.woff') format('woff');
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'Exo2';
-      src: url('fonts/Exo2-Light.woff2') format('woff2'),
-           url('fonts/Exo2-Light.woff') format('woff');
-      font-weight: 300;
-      font-style: normal;
-      font-display: swap;
-    }
-
-    /* Application des polices et styles globaux */
+    /* Fond d'écran fixe avec Boisbrule.png, centré et étendu en gardant ses proportions */
     body {
-      font-family: 'Poppins', 'Exo2', sans-serif;
       background: url('Boisbrule.png') no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: auto;
-      text-shadow: 0 0 1px rgba(0,0,0,0.2);
     }
-
-    /* Conteneur du PDF : 75% de la largeur et 100% de la hauteur sur desktop */
+    /* Conteneur du PDF : 75vw x 100vh sur desktop */
     #pdf-container {
       width: 75vw;
       height: 100vh;
-      overflow: auto;
+      overflow-y: auto;
     }
-
-    /* Chaque page PDF (canvas) : centrée horizontalement avec une marge inférieure de 19px (~5mm) */
+    /* Chaque page PDF (canvas) : centrée horizontalement avec marge inférieure de 19px (~5mm) */
     canvas {
       display: block;
       margin: 0 auto 19px auto;
     }
-
     /* Adaptation pour mobiles/tablettes */
     @media (max-width: 768px) {
       #pdf-container {
         width: 95vw;
         height: 90vh;
-      }
-      body {
-        font-weight: 400;
-        text-shadow: 0 0 1px rgba(0,0,0,0.3);
       }
     }
   </style>
@@ -82,26 +46,38 @@
 </head>
 <body>
   <div id="pdf-container"></div>
-  
   <script>
     const url = 'EngPortfolio.pdf'; // Chemin vers la version anglaise du PDF
     const container = document.getElementById('pdf-container');
 
     function renderPDF() {
-      // Vider le conteneur pour éviter les doublons lors du redimensionnement
-      container.innerHTML = '';
-
+      container.innerHTML = ''; // Vider le conteneur pour éviter les doublons
+      
       pdfjsLib.getDocument(url).promise.then(pdf => {
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           pdf.getPage(pageNum).then(page => {
-            // Forcer l'échelle à 1 (zoom 100% de la taille native)
-            const scale = 1;
-            const viewport = page.getViewport({ scale: scale });
+            // Récupérer la taille native de la page (scale = 1)
+            const initialViewport = page.getViewport({ scale: 1 });
+            // Calculer le facteur d'échelle pour que la page rentre dans le conteneur
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            const scaleFactor = Math.min(containerWidth / initialViewport.width, containerHeight / initialViewport.height);
+            const viewport = page.getViewport({ scale: scaleFactor });
+            
+            // Pour un rendu net sur mobile, multiplier par le devicePixelRatio
+            const dpr = window.devicePixelRatio || 1;
             const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
+            // On définit la résolution du canvas en multipliant par le dpr
+            canvas.width = viewport.width * dpr;
+            canvas.height = viewport.height * dpr;
+            // Et on définit la taille CSS pour qu'il apparaisse à la taille calculée
+            canvas.style.width = viewport.width + 'px';
+            canvas.style.height = viewport.height + 'px';
+            
             const context = canvas.getContext('2d');
-
+            // Appliquer une transformation pour compenser le dpr
+            context.setTransform(dpr, 0, 0, dpr, 0, 0);
+            
             page.render({
               canvasContext: context,
               viewport: viewport
@@ -110,7 +86,7 @@
           });
         }
       }).catch(error => {
-        console.error("Error loading the PDF:", error);
+        console.error("Erreur lors du chargement du PDF :", error);
       });
     }
 
