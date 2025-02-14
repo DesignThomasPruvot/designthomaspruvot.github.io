@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* Empêche tout défilement global */
+      overflow: hidden; /* Empêche le défilement global */
     }
     body {
       background: url('Boisbrule.png') no-repeat center center fixed;
@@ -21,7 +21,7 @@
     #pdf-container {
       width: 75vw;
       height: 100vh;
-      overflow-y: auto; /* Permet uniquement le défilement vertical si nécessaire */
+      overflow-y: auto; /* Permet uniquement le défilement vertical */
     }
     canvas {
       display: block;
@@ -42,22 +42,28 @@
   <div id="pdf-container"></div>
   
   <script>
-    const url = 'EngPortfolio.pdf';
+    const url = 'EngPortfolio.pdf';  // Chemin vers ton PDF
     const container = document.getElementById('pdf-container');
 
     function renderPDF() {
-      container.innerHTML = ''; // Nettoyer avant d'afficher
+      container.innerHTML = '';  // Nettoyer le conteneur à chaque redimensionnement
       pdfjsLib.getDocument(url).promise.then(pdf => {
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           pdf.getPage(pageNum).then(page => {
             const viewport = page.getViewport({ scale: 1 });
-            const scaleFactor = Math.min(container.clientWidth / viewport.width, container.clientHeight / viewport.height) * window.devicePixelRatio;
-            const scaledViewport = page.getViewport({ scale: scaleFactor });
+
+            // Calcul dynamique du facteur de mise à l'échelle en tenant compte de la densité de pixels de l'écran
+            const scaleFactor = Math.min(container.clientWidth / viewport.width, container.clientHeight / viewport.height);
+            const scale = scaleFactor * window.devicePixelRatio;  // Améliorer la densité du rendu sur appareils retina
+
+            const scaledViewport = page.getViewport({ scale: scale });
 
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             canvas.width = scaledViewport.width;
             canvas.height = scaledViewport.height;
+
+            // Ajustement du style du canvas pour maintenir la taille à l'échelle sans perte de qualité
             canvas.style.width = `${scaledViewport.width / window.devicePixelRatio}px`;
             canvas.style.height = `${scaledViewport.height / window.devicePixelRatio}px`;
 
