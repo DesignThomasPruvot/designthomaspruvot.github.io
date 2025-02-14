@@ -49,45 +49,79 @@
   <script>
     const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
     const container = document.getElementById('pdf-container');
+    let isRendering = false;
 
     function renderPDF() {
+      if (isRendering) return; // Évite les appels multiples
+      isRendering = true;
+      
       // Vider le conteneur pour éviter les doublons lors d'un redimensionnement
       container.innerHTML = '';
 
       pdfjsLib.getDocument(url).promise.then(pdf => {
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          pdf.getPage(pageNum).then(page => {
+        const totalPages = pdf.numPages;
+        let currentPage = 1;
+
+        function renderPage() {
+          if (currentPage > totalPages) {
+            isRendering = false;
+            return;
+          }
+
+          pdf.getPage(currentPage).then(page => {
             // Dimensions natives de la page (scale = 1)
             const initialViewport = page.getViewport({ scale: 1 });
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
-            // Calcul du facteur d'échelle pour remplir le conteneur (upscaling autorisé)
+            // Calcul du facteur d'échelle pour remplir le conteneur
             const scale = Math.min(containerWidth / initialViewport.width, containerHeight / initialViewport.height);
             const viewport = page.getViewport({ scale: scale });
 
             const canvas = document.createElement('canvas');
-            canvas.width = viewport.width * window.devicePixelRatio; // Assure une haute résolution
-            canvas.height = viewport.height * window.devicePixelRatio;
+            const scaleFactor = window.devicePixelRatio || 1; // Gère les écrans haute densité
+            canvas.width = viewport.width * scaleFactor;
+            canvas.height = viewport.height * scaleFactor;
+            canvas.style.width = `${viewport.width}px`; // Taille réelle du canvas
+            canvas.style.height = `${viewport.height}px`;
             const context = canvas.getContext('2d');
+            context.scale(scaleFactor, scaleFactor); // Applique le scale au contexte
 
-            // Applique l'anticrénelage pour améliorer la netteté
-            context.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+            // Applique l'anticrénelage
+            context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
 
             page.render({
               canvasContext: context,
               viewport: viewport
+            }).promise.then(() => {
+              container.appendChild(canvas);
+              currentPage++;
+              renderPage(); // Rend la page suivante
             });
-
-            container.appendChild(canvas);
           });
         }
+
+        renderPage(); // Commence le rendu
       }).catch(error => {
         console.error("Erreur lors du chargement du PDF :", error);
+        isRendering = false;
       });
     }
 
+    // Débounce pour le redimensionnement
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(renderPDF, 200); // Attend 200ms avant de re-rendre
+    });
+
     renderPDF();
-    window.addEventListener('resize', renderPDF);
+
+    // Précharge le PDF pour améliorer les performances
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.href = url;
+    link.as = 'document';
+    document.head.appendChild(link);
   </script>
 </body>
 </html>
