@@ -12,73 +12,33 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
-      overflow-x: hidden; /* Empêcher le scroll horizontal */
+      overflow: hidden; /* Empêche le défilement horizontal */
     }
-    /* Chargement des polices */
-    @font-face {
-      font-family: 'Poppins';
-      src: url('fonts/Poppins-Light.woff2') format('woff2'),
-           url('fonts/Poppins-Light.woff') format('woff');
-      font-weight: 300;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'Poppins';
-      src: url('fonts/Poppins-Regular.woff2') format('woff2'),
-           url('fonts/Poppins-Regular.woff') format('woff');
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'Exo2';
-      src: url('fonts/Exo2-Light.woff2') format('woff2'),
-           url('fonts/Exo2-Light.woff') format('woff');
-      font-weight: 300;
-      font-style: normal;
-      font-display: swap;
-    }
-
+    /* Fond d'écran */
     body {
-      font-family: 'Poppins', 'Exo2', sans-serif;
       background: url('Boisbrule.png') no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden; /* Empêche tout défilement inutile */
-      text-shadow: 0 0 1px rgba(0,0,0,0.2);
+      overflow: auto;
     }
-
-    /* Conteneur du PDF : Largeur dynamique et hauteur fixe */
+    /* Conteneur du PDF */
     #pdf-container {
-      width: 80vw; /* Largeur dynamique */
-      height: 90vh;
+      width: 75vw;
+      height: 100vh;
       overflow-y: auto;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
-
-    /* Canvas : largeur adaptable */
+    /* Style des pages PDF */
     canvas {
       display: block;
-      max-width: 100%;
-      height: auto;
-      margin-bottom: 19px; /* Espacement entre les pages */
+      margin: 0 auto 19px auto;
     }
-
-    /* Ajustements pour mobiles/tablettes */
+    /* Responsive pour mobiles/tablettes */
     @media (max-width: 768px) {
       #pdf-container {
         width: 95vw;
         height: 90vh;
-      }
-      body {
-        font-weight: 400;
-        text-shadow: 0 0 1px rgba(0,0,0,0.3);
       }
     }
   </style>
@@ -86,8 +46,9 @@
 </head>
 <body>
   <div id="pdf-container"></div>
+  
   <script>
-    const url = 'EngPortfolio.pdf';
+    const url = 'EngPortfolio.pdf'; 
     const container = document.getElementById('pdf-container');
 
     function renderPDF() {
@@ -98,23 +59,24 @@
           pdf.getPage(pageNum).then(page => {
             const viewport = page.getViewport({ scale: 1 });
 
-            // Calcul dynamique de l'échelle en fonction de la largeur de l'écran
+            // On conserve le système original de dimensionnement
             const containerWidth = container.clientWidth;
-            const scale = containerWidth / viewport.width;
+            const containerHeight = container.clientHeight;
+            const scale = Math.min(containerWidth / viewport.width, containerHeight / viewport.height);
+            const scaledViewport = page.getViewport({ scale: scale });
 
-            // Application du scale + DPI correction
-            const dpr = window.devicePixelRatio || 1;
-            const scaledViewport = page.getViewport({ scale: scale * dpr });
-
+            // Création du canvas
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
 
-            canvas.width = scaledViewport.width;
-            canvas.height = scaledViewport.height;
-            canvas.style.width = (scaledViewport.width / dpr) + 'px';
-            canvas.style.height = (scaledViewport.height / dpr) + 'px';
+            // Correction pour améliorer la netteté
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = scaledViewport.width * dpr;
+            canvas.height = scaledViewport.height * dpr;
+            canvas.style.width = `${scaledViewport.width}px`;
+            canvas.style.height = `${scaledViewport.height}px`;
 
-            context.setTransform(dpr, 0, 0, dpr, 0, 0);
+            context.scale(dpr, dpr);
             context.imageSmoothingEnabled = true;
             context.imageSmoothingQuality = 'high';
 
