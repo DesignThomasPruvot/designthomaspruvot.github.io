@@ -10,33 +10,29 @@
       padding: 0;
       height: 100%;
     }
-
     /* Fond d'écran fixe avec Boisbrule.png, centré et étendu tout en gardant ses proportions */
     body {
       background: url('Boisbrule.png') no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       overflow: hidden; /* Cache la barre de défilement latérale */
     }
-
-    /* Conteneur du PDF : centré, rempli en hauteur et largeur */
+    /* Conteneur du PDF : 75% de la largeur et 100% de la hauteur sur ordinateur */
     #pdf-container {
       width: 75vw;
       height: 100vh;
       overflow-y: auto; /* Permet le défilement vertical si nécessaire */
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      flex-direction: column; /* Affichage vertical des pages */
     }
-
     /* Chaque page PDF (canvas) : centré horizontalement avec une marge inférieure de 19px (5mm) */
     canvas {
       display: block;
       margin: 0 auto 19px auto;
     }
-
     /* Pour mobiles/tablettes : ajustement à 95% de largeur et 90% de hauteur */
     @media (max-width: 768px) {
       #pdf-container {
@@ -50,12 +46,17 @@
 </head>
 <body>
   <div id="pdf-container"></div>
-
+  
   <script>
     const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
     const container = document.getElementById('pdf-container');
 
+    let isRendering = false;
+
     function renderPDF() {
+      if (isRendering) return; // Évite les appels multiples
+      isRendering = true;
+
       // Vider le conteneur pour éviter les doublons lors d'un redimensionnement
       container.innerHTML = '';
 
@@ -65,27 +66,31 @@
 
         function renderPage() {
           if (currentPage > totalPages) {
+            isRendering = false;
             return;
           }
 
           pdf.getPage(currentPage).then(page => {
+            // Dimensions natives de la page (scale = 1)
             const initialViewport = page.getViewport({ scale: 1 });
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
-            
-            // Calcul du facteur d'échelle pour s'assurer que la page tient dans le conteneur
-            const scale = Math.min(containerWidth / initialViewport.width, containerHeight / initialViewport.height);
+            // Calcul du facteur d'échelle pour remplir le conteneur (upscaling autorisé)
+            const scale = Math.min(containerHeight / initialViewport.height, containerWidth / initialViewport.width); // Préférer hauteur comme référence pour l'affichage vertical
             const viewport = page.getViewport({ scale: scale });
 
             const canvas = document.createElement('canvas');
-            const scaleFactor = window.devicePixelRatio || 1;
+            const scaleFactor = window.devicePixelRatio || 1; // Gère les écrans haute densité
             canvas.width = viewport.width * scaleFactor;
             canvas.height = viewport.height * scaleFactor;
-            canvas.style.width = `${viewport.width}px`;
+            canvas.style.width = `${viewport.width}px`; // Taille réelle du canvas
             canvas.style.height = `${viewport.height}px`;
-
             const context = canvas.getContext('2d');
-            context.scale(scaleFactor, scaleFactor);
+            context.scale(scaleFactor, scaleFactor); // Applique un facteur d'échelle au contexte pour la netteté
+
+            // Applique l'anticrénelage pour améliorer la netteté
+            context.imageSmoothingEnabled = true;
+            context.imageSmoothingQuality = 'high';
 
             page.render({
               canvasContext: context,
@@ -98,13 +103,12 @@
           });
         }
 
-        renderPage(); // Commence le rendu de la première page
+        renderPage(); // Commence le rendu
       }).catch(error => {
         console.error("Erreur lors du chargement du PDF :", error);
+        isRendering = false;
       });
     }
-
-    renderPDF();
 
     // Débounce pour le redimensionnement
     let resizeTimeout;
@@ -112,6 +116,8 @@
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(renderPDF, 200); // Attend 200ms avant de re-rendre
     });
+
+    renderPDF();
   </script>
 </body>
 </html>
