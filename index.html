@@ -5,33 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio PDF</title>
   <style>
-    /* Inclusion des polices */
-    @font-face {
-      font-family: 'Poppins';
-      src: url('fonts/Poppins-Regular.woff2') format('woff2'),
-           url('fonts/Poppins-Regular.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'Poppins Light';
-      src: url('fonts/Poppins-Light.woff2') format('woff2'),
-           url('fonts/Poppins-Light.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'Exo 2 Light';
-      src: url('fonts/Exo2-Light.woff2') format('woff2'),
-           url('fonts/Exo2-Light.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
-    }
-
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
+      overflow: hidden; /* Désactive le défilement global */
     }
 
     /* Fond d'écran fixe avec Boisbrule.png, centré et étendu tout en gardant ses proportions */
@@ -41,23 +19,24 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden; /* Cache la barre de défilement latérale */
     }
 
     /* Conteneur du PDF : 75% de la largeur et 100% de la hauteur sur ordinateur */
     #pdf-container {
       width: 75vw;
       height: 100vh;
-      overflow-y: auto; /* Permet le défilement vertical si nécessaire */
+      overflow: auto; /* Permet le défilement horizontal et vertical */
       display: flex;
-      justify-content: center;
       flex-direction: column;
+      align-items: center;
     }
 
     /* Chaque page PDF (canvas) : centré horizontalement avec une marge inférieure de 19px (5mm) */
     canvas {
       display: block;
       margin: 0 auto 19px auto;
+      image-rendering: -webkit-optimize-contrast; /* Améliore la netteté sur Chrome */
+      image-rendering: crisp-edges; /* Améliore la netteté sur Firefox */
     }
 
     /* Pour mobiles/tablettes : ajustement à 95% de largeur et 90% de hauteur */
@@ -67,55 +46,124 @@
         height: 90vh;
       }
     }
+
+    /* Contrôles de zoom */
+    #controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    #controls button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
   </style>
   <!-- Inclusion de PDF.js depuis le CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 </head>
 <body>
   <div id="pdf-container"></div>
+  <div id="controls">
+    <button onclick="zoomIn()">Zoom +</button>
+    <button onclick="zoomOut()">Zoom -</button>
+  </div>
 
   <script>
     const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
     const container = document.getElementById('pdf-container');
+    let currentScale = 1; // Facteur de zoom initial
 
     function renderPDF() {
-      // Vider le conteneur pour éviter les doublons lors d'un redimensionnement
-      container.innerHTML = '';
+      container.innerHTML = ''; // Vider le conteneur
 
       pdfjsLib.getDocument(url).promise.then(pdf => {
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          pdf.getPage(pageNum).then(page => {
-            // Dimensions natives de la page (scale = 1)
+        const totalPages = pdf.numPages;
+        let currentPage = 1;
+
+        function renderPage() {
+          if (currentPage > totalPages) return;
+
+          pdf.getPage(currentPage).then(page => {
             const initialViewport = page.getViewport({ scale: 1 });
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
-            // Calcul du facteur d'échelle pour remplir le conteneur (upscaling autorisé)
-            const scale = Math.min(containerWidth / initialViewport.width, containerHeight / initialViewport.height);
-            const viewport = page.getViewport({ scale: scale });
+
+            // Ajuste l'échelle en fonction de l'orientation
+            let scale;
+            if (window.innerWidth > window.innerHeight) {
+              // Mode paysage : utilise la largeur du conteneur
+              scale = containerWidth / initialViewport.width;
+            } else {
+              // Mode portrait : utilise la hauteur du conteneur
+              scale = containerHeight / initialViewport.height;
+            }
+
+            const viewport = page.getViewport({ scale: scale * currentScale });
 
             const canvas = document.createElement('canvas');
-            canvas.width = viewport.width * window.devicePixelRatio; // Assure une haute résolution
-            canvas.height = viewport.height * window.devicePixelRatio;
+            const scaleFactor = window.devicePixelRatio || 1;
+            canvas.width = viewport.width * scaleFactor;
+            canvas.height = viewport.height * scaleFactor;
+            canvas.style.width = `${viewport.width}px`;
+            canvas.style.height = `${viewport.height}px`;
             const context = canvas.getContext('2d');
-
-            // Applique l'anticrénelage pour améliorer la netteté
-            context.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+            context.scale(scaleFactor, scaleFactor);
 
             page.render({
               canvasContext: context,
               viewport: viewport
+            }).promise.then(() => {
+              container.appendChild(canvas);
+              currentPage++;
+              renderPage(); // Rend la page suivante
             });
-
-            container.appendChild(canvas);
           });
         }
+
+        renderPage(); // Commence le rendu
       }).catch(error => {
         console.error("Erreur lors du chargement du PDF :", error);
       });
     }
 
+    // Gestion du zoom
+    function zoomIn() {
+      currentScale += 0.1;
+      applyZoom();
+    }
+
+    function zoomOut() {
+      currentScale -= 0.1;
+      applyZoom();
+    }
+
+    function applyZoom() {
+      const canvases = document.querySelectorAll('canvas');
+      canvases.forEach(canvas => {
+        const initialWidth = canvas.width / (window.devicePixelRatio || 1);
+        const initialHeight = canvas.height / (window.devicePixelRatio || 1);
+        canvas.style.width = `${initialWidth * currentScale}px`;
+        canvas.style.height = `${initialHeight * currentScale}px`;
+      });
+    }
+
+    // Débounce pour le redimensionnement
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(renderPDF, 200); // Attend 200ms avant de re-rendre
+    });
+
+    // Chargement initial
     renderPDF();
-    window.addEventListener('resize', renderPDF);
   </script>
 </body>
 </html>
