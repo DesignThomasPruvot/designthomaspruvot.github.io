@@ -5,7 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio PDF</title>
   <style>
-    html, body {
+    /* Déclaration des polices avec @font-face */
+    @font-face {
+      font-family: 'Poppins';
+      src: url('fonts/Poppins.woff2') format('woff2'),
+           url('fonts/Poppins.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Poppins';
+      src: url('fonts/Poppins-Light.woff2') format('woff2'),
+           url('fonts/Poppins-Light.woff') format('woff');
+      font-weight: 300; /* Light */
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Exo 2';
+      src: url('fonts/Exo2-Light.woff2') format('woff2'),
+           url('fonts/Exo2-Light.woff') format('woff');
+      font-weight: 300; /* Light */
+      font-style: normal;
+    }
+
+    /* Appliquer les polices au body ou à des éléments spécifiques */
+    body {
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
       height: 100%;
@@ -46,49 +73,40 @@
         height: 90vh;
       }
     }
-
-    /* Contrôles de zoom */
-    #controls {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.8);
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
-
-    #controls button {
-      margin: 0 5px;
-      padding: 5px 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
   </style>
   <!-- Inclusion de PDF.js depuis le CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 </head>
 <body>
   <div id="pdf-container"></div>
-  <div id="controls">
-    <button onclick="zoomIn()">Zoom +</button>
-    <button onclick="zoomOut()">Zoom -</button>
-  </div>
 
   <script>
     const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
     const container = document.getElementById('pdf-container');
-    let currentScale = 1; // Facteur de zoom initial
     let pdfDoc = null;
 
     // Charger le PDF
     pdfjsLib.getDocument(url).promise.then(pdf => {
       pdfDoc = pdf;
-      renderPDF();
+      renderPDF(); // Rendre le PDF initial
+      window.addEventListener('resize', handleResize); // Gérer le redimensionnement
     }).catch(error => {
       console.error("Erreur lors du chargement du PDF :", error);
     });
+
+    // Fonction pour calculer l'échelle automatique
+    function calculateScale(page) {
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      const viewport = page.getViewport({ scale: 1 }); // Vue initiale sans échelle
+
+      // Calculer l'échelle pour s'adapter à la largeur ou à la hauteur du conteneur
+      const scaleWidth = containerWidth / viewport.width;
+      const scaleHeight = containerHeight / viewport.height;
+
+      // Choisir l'échelle la plus petite pour que le PDF tienne dans le conteneur
+      return Math.min(scaleWidth, scaleHeight);
+    }
 
     // Fonction pour rendre le PDF
     function renderPDF() {
@@ -99,58 +117,42 @@
       const totalPages = pdfDoc.numPages;
       let currentPage = 1;
 
-      // Récupère la largeur de la première page pour forcer une taille uniforme
-      pdfDoc.getPage(1).then(firstPage => {
-        const firstViewport = firstPage.getViewport({ scale: currentScale });
-        const pageWidth = firstViewport.width;
+      function renderPage() {
+        if (currentPage > totalPages) return;
 
-        function renderPage() {
-          if (currentPage > totalPages) return;
+        pdfDoc.getPage(currentPage).then(page => {
+          const scale = calculateScale(page); // Calculer l'échelle automatique
+          const viewport = page.getViewport({ scale: scale });
 
-          pdfDoc.getPage(currentPage).then(page => {
-            const viewport = page.getViewport({ scale: currentScale });
+          const canvas = document.createElement('canvas');
+          const scaleFactor = window.devicePixelRatio || 1;
+          canvas.width = viewport.width * scaleFactor;
+          canvas.height = viewport.height * scaleFactor;
+          canvas.style.width = `${viewport.width}px`;
+          canvas.style.height = `${viewport.height}px`;
+          const context = canvas.getContext('2d');
+          context.scale(scaleFactor, scaleFactor);
 
-            const canvas = document.createElement('canvas');
-            const scaleFactor = window.devicePixelRatio || 1;
-            canvas.width = viewport.width * scaleFactor;
-            canvas.height = viewport.height * scaleFactor;
-            canvas.style.width = `${pageWidth}px`; // Force la même largeur pour toutes les pages
-            canvas.style.height = `${(viewport.height / viewport.width) * pageWidth}px`;
-            const context = canvas.getContext('2d');
-            context.scale(scaleFactor, scaleFactor);
-
-            page.render({
-              canvasContext: context,
-              viewport: viewport
-            }).promise.then(() => {
-              container.appendChild(canvas);
-              currentPage++;
-              renderPage(); // Rend la page suivante
-            });
+          page.render({
+            canvasContext: context,
+            viewport: viewport
+          }).promise.then(() => {
+            container.appendChild(canvas);
+            currentPage++;
+            renderPage(); // Rend la page suivante
           });
-        }
+        });
+      }
 
-        renderPage(); // Commence le rendu
-      });
+      renderPage(); // Commence le rendu
     }
 
-    // Gestion du zoom
-    function zoomIn() {
-      currentScale += 0.1;
-      renderPDF(); // Re-rend le PDF avec le nouveau zoom
-    }
-
-    function zoomOut() {
-      currentScale -= 0.1;
-      renderPDF(); // Re-rend le PDF avec le nouveau zoom
-    }
-
-    // Débounce pour le redimensionnement
+    // Gérer le redimensionnement de la fenêtre
     let resizeTimeout;
-    window.addEventListener('resize', () => {
+    function handleResize() {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(renderPDF, 200); // Attend 200ms avant de re-rendre
-    });
+    }
   </script>
 </body>
 </html>
