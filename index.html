@@ -9,27 +9,26 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* Empêche le défilement latéral */
+      overflow: hidden; /* Empêche tout défilement global */
+    }
+    body {
+      background: url('Boisbrule.png') no-repeat center center fixed;
+      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: url('Boisbrule.png') no-repeat center center fixed;
-      background-size: cover;
     }
-
     #pdf-container {
-      width: 80vw;
-      height: 95vh;
-      overflow-y: auto;
+      width: 75vw;
+      height: 100vh;
+      overflow-y: auto; /* Permet uniquement le défilement vertical si nécessaire */
     }
-
     canvas {
       display: block;
       margin: 0 auto 19px auto;
-      image-rendering: crisp-edges;
-      image-rendering: pixelated;
+      max-width: 100%;
+      height: auto;
     }
-
     @media (max-width: 768px) {
       #pdf-container {
         width: 95vw;
@@ -41,31 +40,38 @@
 </head>
 <body>
   <div id="pdf-container"></div>
-
+  
   <script>
     const url = 'EngPortfolio.pdf';
     const container = document.getElementById('pdf-container');
 
     function renderPDF() {
-      container.innerHTML = ''; // Nettoyage avant de recharger le PDF
+      container.innerHTML = ''; // Nettoyer avant d'afficher
       pdfjsLib.getDocument(url).promise.then(pdf => {
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           pdf.getPage(pageNum).then(page => {
-            const initialViewport = page.getViewport({ scale: 1 });
-            const scale = Math.min(container.clientWidth / initialViewport.width, container.clientHeight / initialViewport.height);
-            const viewport = page.getViewport({ scale: scale });
+            const viewport = page.getViewport({ scale: 1 });
+            const scaleFactor = Math.min(container.clientWidth / viewport.width, container.clientHeight / viewport.height) * window.devicePixelRatio;
+            const scaledViewport = page.getViewport({ scale: scaleFactor });
 
             const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
             const context = canvas.getContext('2d');
-            context.imageSmoothingEnabled = false; // Améliore la netteté des caractères
+            canvas.width = scaledViewport.width;
+            canvas.height = scaledViewport.height;
+            canvas.style.width = `${scaledViewport.width / window.devicePixelRatio}px`;
+            canvas.style.height = `${scaledViewport.height / window.devicePixelRatio}px`;
 
-            page.render({ canvasContext: context, viewport: viewport });
+            page.render({
+              canvasContext: context,
+              viewport: scaledViewport
+            });
+
             container.appendChild(canvas);
           });
         }
-      }).catch(error => console.error("Erreur lors du chargement du PDF :", error));
+      }).catch(error => {
+        console.error("Erreur lors du chargement du PDF :", error);
+      });
     }
 
     renderPDF();
