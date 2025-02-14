@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +12,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
-      /* On cache tout débordement horizontal globalement si nécessaire */
-      overflow-x: hidden;
+      overflow-x: hidden; /* Empêcher le scroll horizontal */
     }
     /* Chargement des polices */
     @font-face {
@@ -40,8 +39,7 @@
       font-style: normal;
       font-display: swap;
     }
-    
-    /* Application des polices et styles globaux */
+
     body {
       font-family: 'Poppins', 'Exo2', sans-serif;
       background: url('Boisbrule.png') no-repeat center center fixed;
@@ -49,30 +47,34 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: auto;
+      overflow: hidden; /* Empêche tout défilement inutile */
       text-shadow: 0 0 1px rgba(0,0,0,0.2);
     }
-    
-    /* Conteneur du PDF : 75vw x 100vh sur desktop, sans débordement horizontal */
+
+    /* Conteneur du PDF : Largeur dynamique et hauteur fixe */
     #pdf-container {
-      width: 75vw;
-      height: 100vh;
+      width: 80vw; /* Largeur dynamique */
+      height: 90vh;
       overflow-y: auto;
       overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    
-    /* Chaque page PDF (canvas) : centrée horizontalement avec une marge inférieure de 19px (~5mm) */
+
+    /* Canvas : largeur adaptable */
     canvas {
       display: block;
-      margin: 0 auto 19px auto;
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 19px; /* Espacement entre les pages */
     }
-    
-    /* Adaptation pour mobiles/tablettes */
+
+    /* Ajustements pour mobiles/tablettes */
     @media (max-width: 768px) {
       #pdf-container {
         width: 95vw;
         height: 90vh;
-        overflow-x: hidden;
       }
       body {
         font-weight: 400;
@@ -80,49 +82,52 @@
       }
     }
   </style>
-  <!-- Inclusion de PDF.js depuis le CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 </head>
 <body>
   <div id="pdf-container"></div>
   <script>
-    const url = 'EngPortfolio.pdf'; // Chemin vers la version anglaise du PDF
+    const url = 'EngPortfolio.pdf';
     const container = document.getElementById('pdf-container');
 
     function renderPDF() {
-      container.innerHTML = ''; // Vider le conteneur pour éviter les doublons
-      
+      container.innerHTML = '';
+
       pdfjsLib.getDocument(url).promise.then(pdf => {
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           pdf.getPage(pageNum).then(page => {
-            // On force toujours l'échelle à 1 (zoom 100% natif)
-            const scale = 1;
-            const viewport = page.getViewport({ scale: scale });
-            
-            // Utilisation du devicePixelRatio pour un rendu plus net
+            const viewport = page.getViewport({ scale: 1 });
+
+            // Calcul dynamique de l'échelle en fonction de la largeur de l'écran
+            const containerWidth = container.clientWidth;
+            const scale = containerWidth / viewport.width;
+
+            // Application du scale + DPI correction
             const dpr = window.devicePixelRatio || 1;
+            const scaledViewport = page.getViewport({ scale: scale * dpr });
+
             const canvas = document.createElement('canvas');
-            canvas.width = viewport.width * dpr;
-            canvas.height = viewport.height * dpr;
-            canvas.style.width = viewport.width + 'px';
-            canvas.style.height = viewport.height + 'px';
-            
             const context = canvas.getContext('2d');
+
+            canvas.width = scaledViewport.width;
+            canvas.height = scaledViewport.height;
+            canvas.style.width = (scaledViewport.width / dpr) + 'px';
+            canvas.style.height = (scaledViewport.height / dpr) + 'px';
+
             context.setTransform(dpr, 0, 0, dpr, 0, 0);
-            if (context.imageSmoothingEnabled !== undefined) {
-              context.imageSmoothingEnabled = true;
-              context.imageSmoothingQuality = 'high';
-            }
-            
+            context.imageSmoothingEnabled = true;
+            context.imageSmoothingQuality = 'high';
+
             page.render({
               canvasContext: context,
-              viewport: viewport
+              viewport: scaledViewport
             });
+
             container.appendChild(canvas);
           });
         }
       }).catch(error => {
-        console.error("Error loading the PDF:", error);
+        console.error("Erreur lors du chargement du PDF :", error);
       });
     }
 
