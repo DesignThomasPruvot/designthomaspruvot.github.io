@@ -26,6 +26,7 @@
       overflow-y: auto; /* Permet le défilement vertical si nécessaire */
       display: flex;
       justify-content: center;
+      flex-direction: column; /* Affichage vertical des pages */
     }
     /* Chaque page PDF (canvas) : centré horizontalement avec une marge inférieure de 19px (5mm) */
     canvas {
@@ -49,12 +50,13 @@
   <script>
     const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
     const container = document.getElementById('pdf-container');
+
     let isRendering = false;
 
     function renderPDF() {
       if (isRendering) return; // Évite les appels multiples
       isRendering = true;
-      
+
       // Vider le conteneur pour éviter les doublons lors d'un redimensionnement
       container.innerHTML = '';
 
@@ -73,8 +75,8 @@
             const initialViewport = page.getViewport({ scale: 1 });
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
-            // Calcul du facteur d'échelle pour remplir le conteneur
-            const scale = Math.min(containerWidth / initialViewport.width, containerHeight / initialViewport.height);
+            // Calcul du facteur d'échelle pour remplir le conteneur (upscaling autorisé)
+            const scale = Math.min(containerHeight / initialViewport.height, containerWidth / initialViewport.width); // Préférer hauteur comme référence pour l'affichage vertical
             const viewport = page.getViewport({ scale: scale });
 
             const canvas = document.createElement('canvas');
@@ -84,10 +86,11 @@
             canvas.style.width = `${viewport.width}px`; // Taille réelle du canvas
             canvas.style.height = `${viewport.height}px`;
             const context = canvas.getContext('2d');
-            context.scale(scaleFactor, scaleFactor); // Applique le scale au contexte
+            context.scale(scaleFactor, scaleFactor); // Applique un facteur d'échelle au contexte pour la netteté
 
-            // Applique l'anticrénelage
-            context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
+            // Applique l'anticrénelage pour améliorer la netteté
+            context.imageSmoothingEnabled = true;
+            context.imageSmoothingQuality = 'high';
 
             page.render({
               canvasContext: context,
@@ -115,13 +118,6 @@
     });
 
     renderPDF();
-
-    // Précharge le PDF pour améliorer les performances
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.href = url;
-    link.as = 'document';
-    document.head.appendChild(link);
   </script>
 </body>
 </html>
