@@ -99,47 +99,39 @@
       const totalPages = pdfDoc.numPages;
       let currentPage = 1;
 
-      function renderPage() {
-        if (currentPage > totalPages) return;
+      // Récupère la largeur de la première page pour forcer une taille uniforme
+      pdfDoc.getPage(1).then(firstPage => {
+        const firstViewport = firstPage.getViewport({ scale: currentScale });
+        const pageWidth = firstViewport.width;
 
-        pdfDoc.getPage(currentPage).then(page => {
-          const initialViewport = page.getViewport({ scale: 1 });
-          const containerWidth = container.clientWidth;
-          const containerHeight = container.clientHeight;
+        function renderPage() {
+          if (currentPage > totalPages) return;
 
-          // Ajuste l'échelle en fonction de l'orientation et du zoom
-          let scale;
-          if (window.innerWidth > window.innerHeight) {
-            // Mode paysage : utilise la largeur du conteneur
-            scale = (containerWidth / initialViewport.width) * currentScale;
-          } else {
-            // Mode portrait : utilise la hauteur du conteneur
-            scale = (containerHeight / initialViewport.height) * currentScale;
-          }
+          pdfDoc.getPage(currentPage).then(page => {
+            const viewport = page.getViewport({ scale: currentScale });
 
-          const viewport = page.getViewport({ scale: scale });
+            const canvas = document.createElement('canvas');
+            const scaleFactor = window.devicePixelRatio || 1;
+            canvas.width = viewport.width * scaleFactor;
+            canvas.height = viewport.height * scaleFactor;
+            canvas.style.width = `${pageWidth}px`; // Force la même largeur pour toutes les pages
+            canvas.style.height = `${(viewport.height / viewport.width) * pageWidth}px`;
+            const context = canvas.getContext('2d');
+            context.scale(scaleFactor, scaleFactor);
 
-          const canvas = document.createElement('canvas');
-          const scaleFactor = window.devicePixelRatio || 1;
-          canvas.width = viewport.width * scaleFactor;
-          canvas.height = viewport.height * scaleFactor;
-          canvas.style.width = `${viewport.width}px`;
-          canvas.style.height = `${viewport.height}px`;
-          const context = canvas.getContext('2d');
-          context.scale(scaleFactor, scaleFactor);
-
-          page.render({
-            canvasContext: context,
-            viewport: viewport
-          }).promise.then(() => {
-            container.appendChild(canvas);
-            currentPage++;
-            renderPage(); // Rend la page suivante
+            page.render({
+              canvasContext: context,
+              viewport: viewport
+            }).promise.then(() => {
+              container.appendChild(canvas);
+              currentPage++;
+              renderPage(); // Rend la page suivante
+            });
           });
-        });
-      }
+        }
 
-      renderPage(); // Commence le rendu
+        renderPage(); // Commence le rendu
+      });
     }
 
     // Gestion du zoom
