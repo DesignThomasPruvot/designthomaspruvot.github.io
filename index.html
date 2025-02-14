@@ -80,79 +80,77 @@
     const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
     const container = document.getElementById('pdf-container');
     let currentScale = 1; // Facteur de zoom initial
+    let pdfDoc = null;
 
+    // Charger le PDF
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+      pdfDoc = pdf;
+      renderPDF();
+    }).catch(error => {
+      console.error("Erreur lors du chargement du PDF :", error);
+    });
+
+    // Fonction pour rendre le PDF
     function renderPDF() {
       container.innerHTML = ''; // Vider le conteneur
 
-      pdfjsLib.getDocument(url).promise.then(pdf => {
-        const totalPages = pdf.numPages;
-        let currentPage = 1;
+      if (!pdfDoc) return;
 
-        function renderPage() {
-          if (currentPage > totalPages) return;
+      const totalPages = pdfDoc.numPages;
+      let currentPage = 1;
 
-          pdf.getPage(currentPage).then(page => {
-            const initialViewport = page.getViewport({ scale: 1 });
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
+      function renderPage() {
+        if (currentPage > totalPages) return;
 
-            // Ajuste l'échelle en fonction de l'orientation
-            let scale;
-            if (window.innerWidth > window.innerHeight) {
-              // Mode paysage : utilise la largeur du conteneur
-              scale = containerWidth / initialViewport.width;
-            } else {
-              // Mode portrait : utilise la hauteur du conteneur
-              scale = containerHeight / initialViewport.height;
-            }
+        pdfDoc.getPage(currentPage).then(page => {
+          const initialViewport = page.getViewport({ scale: 1 });
+          const containerWidth = container.clientWidth;
+          const containerHeight = container.clientHeight;
 
-            const viewport = page.getViewport({ scale: scale * currentScale });
+          // Ajuste l'échelle en fonction de l'orientation et du zoom
+          let scale;
+          if (window.innerWidth > window.innerHeight) {
+            // Mode paysage : utilise la largeur du conteneur
+            scale = (containerWidth / initialViewport.width) * currentScale;
+          } else {
+            // Mode portrait : utilise la hauteur du conteneur
+            scale = (containerHeight / initialViewport.height) * currentScale;
+          }
 
-            const canvas = document.createElement('canvas');
-            const scaleFactor = window.devicePixelRatio || 1;
-            canvas.width = viewport.width * scaleFactor;
-            canvas.height = viewport.height * scaleFactor;
-            canvas.style.width = `${viewport.width}px`;
-            canvas.style.height = `${viewport.height}px`;
-            const context = canvas.getContext('2d');
-            context.scale(scaleFactor, scaleFactor);
+          const viewport = page.getViewport({ scale: scale });
 
-            page.render({
-              canvasContext: context,
-              viewport: viewport
-            }).promise.then(() => {
-              container.appendChild(canvas);
-              currentPage++;
-              renderPage(); // Rend la page suivante
-            });
+          const canvas = document.createElement('canvas');
+          const scaleFactor = window.devicePixelRatio || 1;
+          canvas.width = viewport.width * scaleFactor;
+          canvas.height = viewport.height * scaleFactor;
+          canvas.style.width = `${viewport.width}px`;
+          canvas.style.height = `${viewport.height}px`;
+          const context = canvas.getContext('2d');
+          context.scale(scaleFactor, scaleFactor);
+
+          page.render({
+            canvasContext: context,
+            viewport: viewport
+          }).promise.then(() => {
+            container.appendChild(canvas);
+            currentPage++;
+            renderPage(); // Rend la page suivante
           });
-        }
+        });
+      }
 
-        renderPage(); // Commence le rendu
-      }).catch(error => {
-        console.error("Erreur lors du chargement du PDF :", error);
-      });
+      renderPage(); // Commence le rendu
     }
 
     // Gestion du zoom
     function zoomIn() {
       currentScale += 0.1;
-      applyZoom();
+      renderPDF(); // Re-rend le PDF avec le nouveau zoom
     }
 
     function zoomOut() {
       currentScale -= 0.1;
-      applyZoom();
-    }
-
-    function applyZoom() {
-      const canvases = document.querySelectorAll('canvas');
-      canvases.forEach(canvas => {
-        const initialWidth = canvas.width / (window.devicePixelRatio || 1);
-        const initialHeight = canvas.height / (window.devicePixelRatio || 1);
-        canvas.style.width = `${initialWidth * currentScale}px`;
-        canvas.style.height = `${initialHeight * currentScale}px`;
-      });
+      renderPDF(); // Re-rend le PDF avec le nouveau zoom
     }
 
     // Débounce pour le redimensionnement
@@ -161,9 +159,6 @@
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(renderPDF, 200); // Attend 200ms avant de re-rendre
     });
-
-    // Chargement initial
-    renderPDF();
   </script>
 </body>
 </html>
