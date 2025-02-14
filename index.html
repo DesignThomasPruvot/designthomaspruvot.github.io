@@ -3,38 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>English Portfolio</title>
+  <title>Portfolio PDF</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
-      overflow: hidden; /* Empêche le défilement horizontal */
-    }
-    /* Fond d'écran */
-    body {
-      background: url('Boisbrule.png') no-repeat center center fixed;
-      background-size: cover;
+      overflow: hidden; /* Empêche le défilement latéral */
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: auto;
+      background: url('Boisbrule.png') no-repeat center center fixed;
+      background-size: cover;
     }
-    /* Conteneur du PDF */
+
     #pdf-container {
-      width: 75vw;
-      height: 100vh;
+      width: 80vw;
+      height: 95vh;
       overflow-y: auto;
     }
-    /* Style des pages PDF */
+
     canvas {
       display: block;
       margin: 0 auto 19px auto;
+      image-rendering: crisp-edges;
+      image-rendering: pixelated;
     }
-    /* Responsive pour mobiles/tablettes */
+
     @media (max-width: 768px) {
       #pdf-container {
         width: 95vw;
@@ -46,51 +41,31 @@
 </head>
 <body>
   <div id="pdf-container"></div>
-  
+
   <script>
-    const url = 'EngPortfolio.pdf'; 
+    const url = 'EngPortfolio.pdf';
     const container = document.getElementById('pdf-container');
 
     function renderPDF() {
-      container.innerHTML = '';
-
+      container.innerHTML = ''; // Nettoyage avant de recharger le PDF
       pdfjsLib.getDocument(url).promise.then(pdf => {
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           pdf.getPage(pageNum).then(page => {
-            const viewport = page.getViewport({ scale: 1 });
+            const initialViewport = page.getViewport({ scale: 1 });
+            const scale = Math.min(container.clientWidth / initialViewport.width, container.clientHeight / initialViewport.height);
+            const viewport = page.getViewport({ scale: scale });
 
-            // On conserve le système original de dimensionnement
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
-            const scale = Math.min(containerWidth / viewport.width, containerHeight / viewport.height);
-            const scaledViewport = page.getViewport({ scale: scale });
-
-            // Création du canvas
             const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
             const context = canvas.getContext('2d');
+            context.imageSmoothingEnabled = false; // Améliore la netteté des caractères
 
-            // Correction pour améliorer la netteté
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = scaledViewport.width * dpr;
-            canvas.height = scaledViewport.height * dpr;
-            canvas.style.width = `${scaledViewport.width}px`;
-            canvas.style.height = `${scaledViewport.height}px`;
-
-            context.scale(dpr, dpr);
-            context.imageSmoothingEnabled = true;
-            context.imageSmoothingQuality = 'high';
-
-            page.render({
-              canvasContext: context,
-              viewport: scaledViewport
-            });
-
+            page.render({ canvasContext: context, viewport: viewport });
             container.appendChild(canvas);
           });
         }
-      }).catch(error => {
-        console.error("Erreur lors du chargement du PDF :", error);
-      });
+      }).catch(error => console.error("Erreur lors du chargement du PDF :", error));
     }
 
     renderPDF();
