@@ -126,12 +126,13 @@
 
           const canvas = document.createElement('canvas');
           const scaleFactor = window.devicePixelRatio || 1;
-          canvas.width = viewport.width * scaleFactor * 2; // Upscaling x2 pour améliorer la netteté
-          canvas.height = viewport.height * scaleFactor * 2; // Upscaling x2
+          const upscaleFactor = window.innerWidth <= 768 ? 2 : 1.5; // Upscaling x2 pour mobile, x1.5 pour desktop
+          canvas.width = viewport.width * scaleFactor * upscaleFactor; // Appliquer l'upscaling
+          canvas.height = viewport.height * scaleFactor * upscaleFactor;
           canvas.style.width = `${viewport.width}px`;
           canvas.style.height = `${viewport.height}px`;
           const context = canvas.getContext('2d');
-          context.scale(scaleFactor * 2, scaleFactor * 2); // Appliquer l'upscaling
+          context.scale(scaleFactor * upscaleFactor, scaleFactor * upscaleFactor); // Appliquer l'upscaling
 
           // Améliorer l'anticrénelage
           context.imageSmoothingEnabled = true;
@@ -155,7 +156,7 @@
     let resizeTimeout;
     function handleResize() {
       clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(renderPDF, 200); // Attend 200ms avant de re-rendre
+      resizeTimeout = setTimeout(renderPDF, 100); // Délai plus court pour desktop
     }
   </script>
 </body>
