@@ -16,17 +16,17 @@
       background-size: cover;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       overflow: hidden; /* Cache la barre de défilement latérale */
     }
     /* Conteneur du PDF : 75% de la largeur et 100% de la hauteur sur ordinateur */
     #pdf-container {
       width: 75vw;
       height: 100vh;
-      overflow-y: auto; /* Permet le défilement vertical si nécessaire */
+      overflow-y: scroll; /* Permet le défilement vertical manuel */
       display: flex;
       justify-content: center;
-      flex-direction: column; /* Affichage vertical des pages */
+      flex-direction: column;
     }
     /* Chaque page PDF (canvas) : centré horizontalement avec une marge inférieure de 19px (5mm) */
     canvas {
@@ -41,24 +41,22 @@
       }
     }
   </style>
-  <!-- Inclusion de PDF.js depuis le CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 </head>
 <body>
   <div id="pdf-container"></div>
-  
+
   <script>
     const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
     const container = document.getElementById('pdf-container');
 
-    let isRendering = false;
+    let isRendering = false; // Indicateur pour éviter les appels multiples
 
     function renderPDF() {
-      if (isRendering) return; // Évite les appels multiples
+      if (isRendering) return; // Empêche les appels multiples
       isRendering = true;
-
-      // Vider le conteneur pour éviter les doublons lors d'un redimensionnement
-      container.innerHTML = '';
+      
+      container.innerHTML = ''; // Vide le conteneur pour un nouveau rendu
 
       pdfjsLib.getDocument(url).promise.then(pdf => {
         const totalPages = pdf.numPages;
@@ -71,26 +69,21 @@
           }
 
           pdf.getPage(currentPage).then(page => {
-            // Dimensions natives de la page (scale = 1)
             const initialViewport = page.getViewport({ scale: 1 });
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
-            // Calcul du facteur d'échelle pour remplir le conteneur (upscaling autorisé)
-            const scale = Math.min(containerHeight / initialViewport.height, containerWidth / initialViewport.width); // Préférer hauteur comme référence pour l'affichage vertical
+            const scale = Math.min(containerWidth / initialViewport.width, containerHeight / initialViewport.height);
             const viewport = page.getViewport({ scale: scale });
 
             const canvas = document.createElement('canvas');
-            const scaleFactor = window.devicePixelRatio || 1; // Gère les écrans haute densité
+            const scaleFactor = window.devicePixelRatio || 1; // Gestion de la haute résolution
             canvas.width = viewport.width * scaleFactor;
             canvas.height = viewport.height * scaleFactor;
-            canvas.style.width = `${viewport.width}px`; // Taille réelle du canvas
+            canvas.style.width = `${viewport.width}px`;
             canvas.style.height = `${viewport.height}px`;
-            const context = canvas.getContext('2d');
-            context.scale(scaleFactor, scaleFactor); // Applique un facteur d'échelle au contexte pour la netteté
 
-            // Applique l'anticrénelage pour améliorer la netteté
-            context.imageSmoothingEnabled = true;
-            context.imageSmoothingQuality = 'high';
+            const context = canvas.getContext('2d');
+            context.scale(scaleFactor, scaleFactor); // Applique le scale au contexte
 
             page.render({
               canvasContext: context,
@@ -98,26 +91,27 @@
             }).promise.then(() => {
               container.appendChild(canvas);
               currentPage++;
-              renderPage(); // Rend la page suivante
+              renderPage(); // Passe à la page suivante
             });
           });
         }
 
-        renderPage(); // Commence le rendu
+        renderPage(); // Commence à rendre la première page
       }).catch(error => {
         console.error("Erreur lors du chargement du PDF :", error);
         isRendering = false;
       });
     }
 
-    // Débounce pour le redimensionnement
+    // Déclenchement de la fonction au chargement initial
+    renderPDF();
+
+    // Débounce pour éviter des re-rendus trop fréquents lors du redimensionnement
     let resizeTimeout;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(renderPDF, 200); // Attend 200ms avant de re-rendre
+      resizeTimeout = setTimeout(renderPDF, 200); // Attendre 200ms avant de relancer le rendu
     });
-
-    renderPDF();
   </script>
 </body>
 </html>
