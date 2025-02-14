@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,27 +9,30 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* Empêche le défilement global */
     }
+    /* Fond d'écran fixe avec Boisbrule.png, centré et étendu tout en gardant ses proportions */
     body {
       background: url('Boisbrule.png') no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden; /* Cache la barre de défilement latérale */
     }
+    /* Conteneur du PDF : 75% de la largeur et 100% de la hauteur sur ordinateur */
     #pdf-container {
       width: 75vw;
       height: 100vh;
-      overflow-y: auto; /* Permet uniquement le défilement vertical */
+      overflow-y: auto; /* Permet le défilement vertical si nécessaire */
+      display: flex;
+      justify-content: center;
     }
+    /* Chaque page PDF (canvas) : centré horizontalement avec une marge inférieure de 19px (5mm) */
     canvas {
       display: block;
       margin: 0 auto 19px auto;
-      max-width: 100%;
-      height: auto;
-      image-rendering: auto; /* Lissage de l'image pour les polices */
     }
+    /* Pour mobiles/tablettes : ajustement à 95% de largeur et 90% de hauteur */
     @media (max-width: 768px) {
       #pdf-container {
         width: 95vw;
@@ -38,41 +40,42 @@
       }
     }
   </style>
+  <!-- Inclusion de PDF.js depuis le CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 </head>
 <body>
   <div id="pdf-container"></div>
   
   <script>
-    const url = 'EngPortfolio.pdf';  // Chemin vers ton PDF
+    const url = 'EngPortfolio.pdf'; // Chemin vers le PDF
     const container = document.getElementById('pdf-container');
 
     function renderPDF() {
-      container.innerHTML = '';  // Nettoyer le conteneur à chaque redimensionnement
+      // Vider le conteneur pour éviter les doublons lors d'un redimensionnement
+      container.innerHTML = '';
+
       pdfjsLib.getDocument(url).promise.then(pdf => {
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           pdf.getPage(pageNum).then(page => {
-            const viewport = page.getViewport({ scale: 1 });
-
-            // Calcul dynamique du facteur de mise à l'échelle
-            const scaleFactor = Math.min(container.clientWidth / viewport.width, container.clientHeight / viewport.height);
-            const scale = scaleFactor * window.devicePixelRatio;  // Amélioration de la densité de rendu sur appareils Retina
-
-            const scaledViewport = page.getViewport({ scale: scale });
+            // Dimensions natives de la page (scale = 1)
+            const initialViewport = page.getViewport({ scale: 1 });
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            // Calcul du facteur d'échelle pour remplir le conteneur (upscaling autorisé)
+            const scale = Math.min(containerWidth / initialViewport.width, containerHeight / initialViewport.height);
+            const viewport = page.getViewport({ scale: scale });
 
             const canvas = document.createElement('canvas');
+            canvas.width = viewport.width * window.devicePixelRatio; // Assure une haute résolution
+            canvas.height = viewport.height * window.devicePixelRatio;
             const context = canvas.getContext('2d');
-            canvas.width = scaledViewport.width;
-            canvas.height = scaledViewport.height;
 
-            // Ajustement du style du canvas pour maintenir la taille à l'échelle sans perte de qualité
-            canvas.style.width = `${scaledViewport.width / window.devicePixelRatio}px`;
-            canvas.style.height = `${scaledViewport.height / window.devicePixelRatio}px`;
+            // Applique l'anticrénelage pour améliorer la netteté
+            context.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
 
-            // Rendu du PDF avec l'amélioration de l'anti-aliasing
             page.render({
               canvasContext: context,
-              viewport: scaledViewport
+              viewport: viewport
             });
 
             container.appendChild(canvas);
