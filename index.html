@@ -86,7 +86,7 @@
     function loadPages() {
       for (let i = 1; i <= totalPages; i++) {
         const img = document.createElement('img');
-        img.src = `Webp/Page${i}.webp`;
+        img.src = `Webp/Page${i}.webp`; // Assurez-vous que le dossier est bien "Webp"
         img.alt = `Page ${i}`;
         img.classList.add('portfolio-page');
         img.setAttribute('aria-label', `Page ${i}`);
