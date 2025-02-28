@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio Thomas Pruvot</title>
+  <meta name="description" content="Découvrez le portfolio de Thomas Pruvot, designer spécialisé dans le design graphique et web.">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -11,7 +12,6 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden;
       background: url('Boisbrule.png') no-repeat center center fixed;
       background-size: cover;
       display: flex;
@@ -30,29 +30,46 @@
       position: relative;
     }
 
-    #portfolio-container::-webkit-scrollbar {
-      width: 12px;
+    /* Masquer la barre de défilement sur mobile et tablette tout en permettant le défilement */
+    @media (max-width: 768px), (max-height: 480px) {
+      #portfolio-container {
+        width: 95vw;
+        scrollbar-width: none; /* Pour Firefox */
+        -ms-overflow-style: none; /* Pour Internet Explorer et Edge */
+      }
+
+      #portfolio-container::-webkit-scrollbar {
+        display: none; /* Pour Chrome, Safari et Opera */
+      }
     }
 
-    #portfolio-container::-webkit-scrollbar-track {
-      background: url('Images/Barredefilement.png') repeat-y;
-      background-size: contain;
-    }
+    /* Personnalisation de la barre de défilement pour desktop */
+    @media (min-width: 769px) {
+      body {
+        overflow: hidden; /* Empêcher le défilement de la page */
+      }
 
-    #portfolio-container::-webkit-scrollbar-thumb {
-      background: url('Images/Curseurdefilement.png') no-repeat;
-      background-size: contain;
-      border-radius: 10px;
-    }
+      #portfolio-container {
+        overflow-y: scroll; /* Activer le défilement dans le conteneur */
+        padding-right: 20px; /* Espace pour la barre de défilement */
+      }
 
-    #portfolio-container::-webkit-scrollbar-thumb:hover {
-      background: url('Images/Curseurdefilement-hover.png') no-repeat;
-      background-size: contain;
-    }
+      /* Styles pour la barre de défilement */
+      #portfolio-container::-webkit-scrollbar {
+        width: 8px;
+      }
 
-    #portfolio-container {
-      scrollbar-width: thin;
-      scrollbar-color: dark transparent;
+      #portfolio-container::-webkit-scrollbar-track {
+        background: url('Images/Barredefilement.png') repeat-y;
+        background-size: contain;
+      }
+
+      #portfolio-container::-webkit-scrollbar-thumb {
+        background: url('Images/Curseurdefilement.png') no-repeat;
+        background-size: contain;
+        border-radius: 10px;
+        background-position: center; /* Centrer l'image dans le thumb */
+      }
     }
 
     .portfolio-page {
@@ -61,35 +78,25 @@
       max-width: 100%;
       height: auto;
     }
-
-    .page-number {
-      text-align: center;
-      margin: 2mm 0 5mm 0;
-      font-size: 14px;
-      color: #333;
-    }
-
-    @media (max-width: 768px) {
-      #portfolio-container {
-        width: 95vw;
-      }
-    }
   </style>
 </head>
 <body>
   <div id="portfolio-container"></div>
 
   <script>
-    const totalPages = 20;
+    const totalPages = 38;
     const container = document.getElementById('portfolio-container');
+    const isMobile = window.innerWidth <= 768 || window.innerHeight <= 480;
+    const imageFolder = isMobile ? '~designthomaspruvot.github.io/WbepA4' : '~designthomaspruvot.github.io/WbepA3';
 
     function loadPages() {
       for (let i = 1; i <= totalPages; i++) {
         const img = document.createElement('img');
-        img.src = `Webp/Page${i}.webp`; // Assurez-vous que le dossier est bien "Webp"
-        img.alt = `Page ${i}`;
+        img.src = `${imageFolder}/Page${i}.webp`;
+        img.alt = `Design de la page ${i} par Thomas Pruvot`;
         img.classList.add('portfolio-page');
         img.setAttribute('aria-label', `Page ${i}`);
+        img.loading = "lazy"; // Chargement différé pour les images
 
         img.onerror = () => {
           console.error(`Erreur de chargement : ${img.src}`);
@@ -101,11 +108,6 @@
         };
 
         container.appendChild(img);
-
-        const pageNumber = document.createElement('p');
-        pageNumber.textContent = `Page ${i}`;
-        pageNumber.classList.add('page-number');
-        container.appendChild(pageNumber);
       }
     }
 
