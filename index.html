@@ -106,16 +106,18 @@
         }
         
         ::-webkit-scrollbar {
-            width: 20px;
+			width: 12px;
         }
         
         ::-webkit-scrollbar-track {
-            background: #000;
+            background: url('Images/Bois-brule.webp') fixed center/cover no-repeat;
         }
         
         ::-webkit-scrollbar-thumb {
-            background: url('Images/Curseur-defilement.webp') no-repeat center;
-            background-size: contain;
+        background: url('Images/Curseur-defilement.webp') no-repeat center;
+        background-size: 100% 100%;
+        border: none;
+        border-radius: 0; 
         }
         
         ::-webkit-scrollbar-thumb:hover {
@@ -1101,6 +1103,12 @@
 </head>
 <body>
 
+     <!-- Language Switcher -->
+     <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+          <span style="font-size: 14px; font-weight: 500; font-family: Tahoma, Verdana, sans-serif; letter-spacing: 0.5px; background: url('Images/Curseur-defilement.webp') center/cover; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">EN</span>
+          <span style="font-size: 14px; font-weight: 500; font-family: Tahoma, Verdana, sans-serif; color: rgba(90, 138, 138, 0.6);"> / </span>
+          <a href="https://thomaspruvotdesign.github.io" style="text-decoration: none; font-size: 14px; font-weight: 500; font-family: Tahoma, Verdana, sans-serif; letter-spacing: 0.5px; background: url('Images/Curseur-defilement.webp') center/cover; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; cursor: pointer;">FR</a>
+     </div>
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
         <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
         <span class="lightbox-nav lightbox-prev" onclick="changeLightboxImage(-1, event)">‹</span>
