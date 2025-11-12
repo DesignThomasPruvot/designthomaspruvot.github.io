@@ -1,6 +1,3 @@
-# 📄 **HTML Complet Corrigé (1980 lignes)**
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,7 +73,7 @@
       "logo": "https://designthomaspruvot.github.io/Images/Logo.webp",
       "description": "Exceptional gesso creations and unique lighting fixtures",
       "sameAs": [
-        "https://github.com/thomaspruvotdesign"
+        "https://github.com/designthomaspruvot"
       ]
     }
     </script>
@@ -116,7 +113,7 @@ body::-webkit-scrollbar {
      width: 10px;
      height: 100vh;
      pointer-events: none;
-     z-index: 9999;
+     z-index: 9998;
 }
 
 #custom-scrollbar-thumb {
@@ -128,7 +125,7 @@ body::-webkit-scrollbar {
 	 opacity: 1 !important;
      visibility: visible !important;
      display: block !important;
-     z-index: 9999 !important;
+     z-index: 9998 !important;
 }
 
 #custom-scrollbar-thumb:active {
@@ -157,7 +154,7 @@ body {
 .lightbox {
     display: none;
     position: fixed;
-    z-index: 9999;
+    z-index: 10000;
     top: 0;
     left: 0;
     width: 100vw;
@@ -180,17 +177,21 @@ body {
 }
 
 .lightbox.active {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 .lightbox-content {
-    max-width: 95vw;
-    max-height: 80vh;
+    max-width: 90vw;
+    max-height: 75vh;
+    width: auto;
+    height: auto;
     object-fit: contain;
     pointer-events: auto;
     box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    margin: 0;
 }
 
 .lightbox-close {
@@ -241,6 +242,12 @@ body {
     color: transparent;
     user-select: none;
     transition: opacity 0.2s;
+    font-family: Arial, sans-serif;
+    font-weight: 100;
+    line-height: 1;
+    flex-shrink: 0;
+    min-width: 60px;
+    text-align: center;
 }
 
 .lightbox-prev:hover,
@@ -258,6 +265,9 @@ body {
     -webkit-text-fill-color: transparent;
     color: transparent;
     white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 120px;
+    text-align: center;
 }
 
 .no-lightbox {
@@ -763,7 +773,7 @@ h3.collection-category {
     background: transparent !important;
     border: 1px solid rgba(90, 138, 138, 0.6) !important;
     opacity: 0.7 !important;
-    border-radius: 50% !important;
+    border-radius: 0 !important;
 	cursor: pointer !important;
 }
 
@@ -910,7 +920,8 @@ h3.collection-category {
 .contact a {
     font-family: 'Tahoma', 'Verdana', sans-serif;
     text-decoration: none;
-    font-size: 1.25rem;
+    font-size: 1.
+	25rem;
     background: url('Images/Texture-garamond.webp') center/cover;
     -webkit-background-clip: text;
     background-clip: text;
@@ -999,7 +1010,7 @@ footer p {
 }
 
 @media (max-width: 768px) {
-    div[style*="position: fixed"][style*="top: 20px"] {
+    .language-switcher {
         position: absolute !important;
         top: 20px !important;
         right: 20px !important;
@@ -1086,7 +1097,7 @@ footer p {
         width: 10px;
         height: 100vh;
         pointer-events: auto;
-        z-index: 9999;
+        z-index: 9998;
     }
 
     #custom-scrollbar-thumb {
@@ -1240,37 +1251,59 @@ footer p {
         padding: 0 0.5rem;
     }
     
-    /* LIGHTBOX MOBILE */
+    .lightbox.active {
+        display: flex !important;
+		flex-direction: column !important;
+		align-items: center !important;
+		justify-content: center !important;
+		padding-top: 0 !important;
+		height: 100vh !important;
+		height: -webkit-fill-available !important; 
+		height: 100dvh !important;
+		overflow: hidden !important;
+    }
+
     .lightbox-close {
-        top: 15px !important;
-        right: 15px !important;
-        font-size: 2.5rem !important;
+        top: 10px !important;
+        right: 10px !important;
+        font-size: 2rem !important;
         padding: 5px !important;
     }
 
     .lightbox-content {
-        max-height: 60vh !important;
+        max-height: 70vh !important;
         max-width: 90vw !important;
+		margin: 0 !important;
+		object-fit: contain !important;
     }
 
     .lightbox-controls {
-        bottom: 20px !important;
-        gap: 20px !important;
+		display: flex !important;
+		justify-content: center !important;
+		align-items: center !important;
+		gap: 15px !important;
+		position: fixed !important;
+		bottom: 20px !important;
+		left: 50% !important;
+		transform: translateX(-50%) !important;
+		width: auto !important;
     }
 
     .lightbox-prev,
     .lightbox-next {
-        font-size: 3rem !important;
+        font-size: 2.5rem !important;
         padding: 5px 15px !important;
+        min-width: 50px !important;
     }
 
     .lightbox-counter {
-        font-size: 1.2rem !important;
+        font-size: 1rem !important;
         padding: 10px 20px !important;
+        min-width: 100px !important;
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 480px) and (orientation: portrait) {
     ::-webkit-scrollbar {
         width: 6px;
     }
@@ -1313,6 +1346,20 @@ footer p {
         font-size: 0.85rem !important;
         word-break: break-all;
     }
+	
+	.lightbox-content {
+        max-height: 70vh !important;
+        max-width: 92vw !important;
+    }
+    
+    .lightbox-controls {
+        gap: 12px !important;
+    }
+    
+    .lightbox-counter {
+        font-size: 0.95rem !important;
+        padding: 8px 16px !important;
+    }
 }
 
 #custom-scrollbar-thumb {
@@ -1323,6 +1370,75 @@ footer p {
     cursor: grabbing !important;
 }
 
+@media (min-width: 769px) and (max-width: 1024px) {
+    .lightbox.active {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+		padding-top: 0 !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+		overflow: hidden !important;
+    }
+    
+	.lightbox-close {
+        top: 12px !important;
+        right: 12px !important;
+        font-size: 2.2rem !important;
+        padding: 5px !important;
+    }
+	
+    .lightbox-content {
+        max-height: 70vh !important;
+        max-width: 80vw !important;
+        object-fit: contain !important;
+    }
+    
+    .lightbox-controls {
+        gap: 18px !important;
+    }
+    
+    .lightbox-counter {
+        font-size: 1.1rem !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+    .lightbox.active {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding-top: 0 !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        overflow: hidden !important;
+    }
+
+    .lightbox-content {
+        max-height: 75vh !important;
+        max-width: 85vw !important;
+        margin: 0 !important;
+    }
+
+    .lightbox-controls {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 18px !important;
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: auto !important;
+    }
+
+    .lightbox-counter {
+        font-size: 1.1rem !important;
+        padding: 12px 24px !important;
+    }
+}
 </style>
 </head>
 <body>
@@ -1539,9 +1655,9 @@ footer p {
                 <article class="collection-card">
                     <div class="collection-gallery">
                         <div class="collection-images">
-							<img src="Images/Console-et-miroir-mica-en-situation.webp" alt="Mica Console and Mirror" class="collection-image">
-                            <img src="Images/Console-mica.webp" alt="Mica Console" class="collection-image">
-                            <img src="Images/Console-mica-detail.webp" alt="Mica Console detail" class="collection-image">
+							<img src="Images/Console-et-miroir-en-situation.webp" alt="Console et miroir Mica" class="collection-image">
+                            <img src="Images/Console-mica.webp" alt="Console Mica" class="collection-image">
+                            <img src="Images/Console-mica-detail.webp" alt="Console Mica détail" class="collection-image">
                         </div>
                     </div>
                     <div class="gallery-nav">
@@ -1552,15 +1668,15 @@ footer p {
                     <div class="collection-info">
                         <h3 class="collection-title">Console Mica</h3>
                         <p class="collection-description">Gesso marquetry console with soft, rounded forms, created from mica pieces offering a texture reminiscent of leather or animal skin. This unique piece combines functionality and refined aesthetics, integrating harmoniously into exceptional interiors. The meticulous work on the material reveals subtle plays of light that transform the surrounding space.</p>
-                        <p class="collection-dimensions">90 cm (H) × 140 cm (W) × 36 cm (D)<br>Edges: 5 cm</p>
+                        <p class="collection-dimensions">90 cm (H) × 140 cm (L) × 36 cm (P)<br>Edges : 5 cm</p>
                     </div>
                 </article>
                 
                 <article class="collection-card">
                     <div class="collection-gallery">
                         <div class="collection-images">
-                            <img src="Images/Miroir-mica-en-situation.webp" alt="Mica Mirror" class="collection-image">
-                            <img src="Images/Vase-mica-en-situation.webp" alt="Mica Vase" class="collection-image">
+                            <img src="Images/Miroir-mica-en-situation.webp" alt="Miroir Mica" class="collection-image">
+                            <img src="Images/Vase-mica-en-situation.webp" alt="Vase Mica" class="collection-image">
                         </div>
                     </div>
                     <div class="gallery-nav">
@@ -1568,7 +1684,7 @@ footer p {
                         <span class="gallery-dot" onclick="showGalleryImage(this, 1)"></span>
                     </div>
                     <div class="collection-info">
-                        <h3 class="collection-title"> Mirror & Vase Mica</h3>
+                        <h3 class="collection-title">Mirror & Vase Mica</h3>
                         <p class="collection-description">Harmonious ensemble in Mica gesso marquetry, where organic curves naturally integrate into exceptional interiors. The mirror and vase dialogue together to create a balanced and elegant composition. These pieces bear witness to an ancestral savoir-faire reinterpreted with contemporary sensitivity, inviting daily contemplation and wonder.</p>
                         <p class="collection-dimensions">Mirror: ⌀ 120 cm, inner mirror ⌀ 60 cm<br>Thickness: 3 cm<br><br>Vase: 70 cm (H) × 45 cm (W) × 20 cm (D)</p>
                     </div>
@@ -1582,19 +1698,19 @@ footer p {
             
             <div class="materials-samples cosmati">
                 <div class="material-sample">
-                    <img src="Images/Cosmati-etoile.webp" alt="Cosmati Star">
+                    <img src="Images/Cosmati-etoile.webp" alt="Cosmati Etoile">
                     <div class="material-label">Etoile</div>
                 </div>
                 <div class="material-sample">
-                    <img src="Images/Cosmati-dedale.webp" alt="Cosmati Labyrinth">
+                    <img src="Images/Cosmati-dedale.webp" alt="Cosmati Dédale">
                     <div class="material-label">Dédale</div>
                 </div>
                 <div class="material-sample">
-                    <img src="Images/Cosmati-fleches.webp" alt="Cosmati Arrows">
+                    <img src="Images/Cosmati-fleches.webp" alt="Cosmati Flèches">
                     <div class="material-label">Flèches</div>
                 </div>
                 <div class="material-sample">
-                    <img src="Images/Cosmati-terre-d-ombre.webp" alt="Cosmati Earth Shadow">
+                    <img src="Images/Cosmati-terre-d-ombre.webp" alt="Cosmati Terre d'ombre">
                     <div class="material-label">Terre d'ombre</div>
                 </div>
             </div>
@@ -1603,9 +1719,9 @@ footer p {
                 <article class="collection-card">
                     <div class="collection-gallery">
                         <div class="collection-images">
-                            <img src="Images/Miroir-iris-en-situation.webp" alt="Iris Mirror" class="collection-image">
-                            <img src="Images/Miroir-iris-detail-1.webp" alt="Iris Mirror detail 1" class="collection-image">
-                            <img src="Images/Miroir-iris-detail-2.webp" alt="Iris Mirror detail 2" class="collection-image">
+                            <img src="Images/Miroir-iris-en-situation.webp" alt="Miroir Iris" class="collection-image">
+                            <img src="Images/Miroir-iris-detail-1.webp" alt="Miroir Iris détail 1" class="collection-image">
+                            <img src="Images/Miroir-iris-detail-2.webp" alt="Miroir Iris détail 2" class="collection-image">
                         </div>
                     </div>
                     <div class="gallery-nav">
@@ -1616,7 +1732,7 @@ footer p {
                     <div class="collection-info">
                         <h3 class="collection-title">Mirror Iris</h3>
                         <p class="collection-description">Mirror in geometric gesso marquetry according to the phi ratio. The Cosmati patterns recall the timeless beauty of sacred geometry and divine proportions used in Italian religious architecture. "Iris" transforms the space it inhabits, creating a focal point that is both contemplative and majestic. The intricate details reveal work of extreme precision, the fruit of hours of meticulous creation.</p>
-                        <p class="collection-dimensions">116 × 110 cm<br>Flat surfaces: 23 cm<br>Thickness: 3 cm</p>
+                        <p class="collection-dimensions">116 × 110 cm<br>Flat surface : 23 cm<br>Thickness : 3 cm</p>
                     </div>
                 </article>
             </div>
@@ -1628,15 +1744,15 @@ footer p {
             
             <div class="materials-samples peau-gesso">
                 <div class="material-sample">
-                    <img src="Images/Peau-de-gesso-azurite.webp" alt="Gesso Skin Azurite">
+                    <img src="Images/Peau-de-gesso-azurite.webp" alt="Peau de Gesso Azurite">
                     <div class="material-label">Azurite</div>
                 </div>
                 <div class="material-sample">
-                    <img src="Images/Peau-de-gesso-variations.webp" alt="Gesso Skin Variations">
+                    <img src="Images/Peau-de-gesso-variations.webp" alt="Peau de Gesso Variations">
                     <div class="material-label">Variations</div>
                 </div>
                 <div class="material-sample">
-                    <img src="Images/Peau-de-gesso-mercure.webp" alt="Gesso Skin Mercury">
+                    <img src="Images/Peau-de-gesso-mercure.webp" alt="Peau de Gesso Mercure">
                     <div class="material-label">Mercure</div>
                 </div>
             </div>
@@ -1645,9 +1761,9 @@ footer p {
                 <article class="collection-card">
                     <div class="collection-gallery">
                         <div class="collection-images">
-                            <img src="Images/Miroir-azurite.webp" alt="Azurite Mirror" class="collection-image">
-                            <img src="Images/Miroir-azurite-detail-face.webp" alt="Azurite Mirror detail front" class="collection-image">
-                            <img src="Images/Miroir-azurite-detail-trois-quart.webp" alt="Azurite Mirror detail" class="collection-image">
+                            <img src="Images/Miroir-azurite.webp" alt="Miroir Azurite" class="collection-image">
+                            <img src="Images/Miroir-azurite-detail-face.webp" alt="Miroir Azurite détail face" class="collection-image">
+                            <img src="Images/Miroir-azurite-detail-trois-quart.webp" alt="Miroir Azurite détail" class="collection-image">
                         </div>
                     </div>
                     <div class="gallery-nav">
@@ -1656,14 +1772,14 @@ footer p {
                         <span class="gallery-dot" onclick="showGalleryImage(this, 2)"></span>
                     </div>
                     <div class="collection-info">
-                        <h3 class="collection-title">Mirror Azurite</h3>
+                        <h3 class="collection-title">Miroir Azurite</h3>
                         <p class="collection-description">Mirror in "Peau de gesso" with finishes evoking snake or pangolin skin. This unique texture resonates with natural phyllotaxis, creating a work of extraordinary visual complexity. The subtle interplay between geometry and organicity gives this piece a magnetic presence that attracts the eye and invites discovery of the countless details of its surface. Contemporary craftsmanship that honors ancestral techniques while offering a resolutely modern aesthetic.</p>
-                        <p class="collection-dimensions">145 × 90 cm<br>Flat surfaces: 18 cm<br>Thickness: 3 cm</p>
+                        <p class="collection-dimensions">145 × 90 cm<br>Flat surface : 18 cm<br>Thickness : 3 cm</p>
                     </div>
                 </article>
             </div>
         </section>
-		
+        
         <section id="contact">
             <div class="contact">
                 <h2>CONTACT</h2>
@@ -1672,7 +1788,7 @@ footer p {
                 <p style="margin-top: 1rem;">+33 6.27.27.21.93</p>
                 <p style="margin-top: 0.5rem;">Val-de-Marne, France</p>
                 <div class="contact-card">
-                    <img src="Images/Carte-de-visite.webp" alt="Business card">
+                    <img src="Images/Carte-de-visite.webp" alt="Carte de visite">
                 </div>
             </div>
         </section>
@@ -1685,290 +1801,353 @@ footer p {
     </footer>
     
     <script>
-        // COPYRIGHT PROTECTION
-        document.addEventListener('contextmenu', function(e) {
-            if (e.target.tagName === 'IMG' && !e.target.classList.contains('lightbox-content')) {
-                e.preventDefault();
-                return false;
+// ========================================
+// PROTECTION COPYRIGHT
+// ========================================
+document.addEventListener('contextmenu', function(e) {
+    if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+        return false;
+    }
+});
+
+document.addEventListener('dragstart', function(e) {
+    if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+        return false;
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// ========================================
+// BLOCAGE ORIENTATION PAYSAGE SUR MOBILE
+// ========================================
+function checkOrientation() {
+    if (window.innerWidth <= 768) {
+        let warningOverlay = document.getElementById('orientation-warning');
+        
+        // Mode paysage détecté
+        if (window.innerWidth > window.innerHeight) {
+            if (!warningOverlay) {
+                createOrientationWarning();
+            } else {
+                warningOverlay.style.display = 'flex';
             }
-        });
-        
-        document.addEventListener('dragstart', function(e) {
-            if (e.target.tagName === 'IMG') {
-                e.preventDefault();
-                return false;
+            document.body.style.overflow = 'hidden';
+        } 
+        // Mode portrait
+        else {
+            if (warningOverlay) {
+                warningOverlay.style.display = 'none';
             }
-        });
-        
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                return false;
+            // Ne rétablit l'overflow que si lightbox fermée
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox || !lightbox.classList.contains('active')) {
+                document.body.style.overflow = '';
             }
-        });
+        }
+    }
+}
+
+function createOrientationWarning() {
+    const warning = document.createElement('div');
+    warning.id = 'orientation-warning';
+    warning.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:100000;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;box-sizing:border-box;';
+    
+    warning.innerHTML = '<div style="text-align:center;background:url(\'Images/Curseur-defilement.webp\') center/cover;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-family:Garamond,serif;font-size:1.5rem;line-height:1.8;max-width:80%;"><div style="font-size:4rem;margin-bottom:20px;filter:grayscale(0);">📱</div>Veuillez tourner votre appareil en mode portrait pour une expérience optimale</div>';
+    
+    document.body.appendChild(warning);
+}
+
+// ========================================
+// LIGHTBOX
+// ========================================
+let currentLightboxGallery = [];
+let currentLightboxIndex = 0;
+let currentCollectionName = '';
+let touchStartX = 0;
+let touchEndX = 0;
+
+function openLightbox(img, gallery) {
+    if (img.classList.contains('no-lightbox')) return;
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const parentCard = gallery.closest('.collection-card, .luminaire');
+
+    if (parentCard) {
+        const dots = parentCard.querySelectorAll('.gallery-dot');
+        const allImages = parentCard.querySelectorAll('.collection-image, .luminaire-image');
+        currentLightboxGallery = Array.from(allImages).slice(0, dots.length);
         
-		// LIGHTBOX
-		let currentLightboxGallery = [];
-		let currentLightboxIndex = 0;
-		let currentCollectionName = '';
+        const titleElement = parentCard.querySelector('.collection-title, .luminaire-title');
+        currentCollectionName = titleElement ? titleElement.textContent.trim() : '';
 
-		function openLightbox(img, gallery) {
-			// ✅ BLOQUER certaines images
-			if (img.classList.contains('no-lightbox')) {
-				return;
-			}
-    
-			const lightbox = document.getElementById('lightbox');
-			const lightboxImg = document.getElementById('lightbox-img');
-    
-			// Trouver la card/section parente pour compter les dots
-			const parentCard = gallery.closest('.collection-card, .luminaire');
-    
-			if (parentCard) {
-				// Pour collections/luminaires : utiliser le nombre de dots
-				const dots = parentCard.querySelectorAll('.gallery-dot');
-				const dotCount = dots.length;
-				currentLightboxGallery = Array.from(gallery.querySelectorAll('.collection-image, .luminaire-image')).slice(0, dotCount);
+    } else if (gallery.classList.contains('materials-samples')) {
+        currentLightboxGallery = Array.from(gallery.querySelectorAll('.material-sample img'));
         
-				// Récupérer le nom de la collection/luminaire
-				const titleElement = parentCard.querySelector('.collection-title, .luminaire-title');
-				currentCollectionName = titleElement ? titleElement.textContent.trim() : '';
+        const parentSection = gallery.closest('section');
+        const categoryTitle = parentSection ? parentSection.querySelector('h3.collection-category') : null;
+
+        if (categoryTitle) {
+            const categoryText = categoryTitle.textContent.trim().toUpperCase();
+            if (categoryText.includes('ORGANIQUE')) {
+                currentCollectionName = 'Organique';
+            } else if (categoryText.includes('COSMATI')) {
+                currentCollectionName = 'Cosmati';
+            } else if (categoryText.includes('PEAU DE GESSO')) {
+                currentCollectionName = 'Peau de gesso';
+            } else {
+                currentCollectionName = '';
+            }
+        }
+    } else {
+        currentLightboxGallery = [img];
+        currentCollectionName = '';
+    }
+
+    currentLightboxIndex = currentLightboxGallery.indexOf(img);
+    if (currentLightboxIndex === -1) currentLightboxIndex = 0;
+    
+    lightboxImg.src = img.src;
+    lightbox.classList.add('active');
+
+    const controls = document.querySelector('.lightbox-controls');
+    controls.style.display = currentLightboxGallery.length > 1 ? 'flex' : 'none';
+
+    document.body.style.overflow = 'hidden';
+    
+	lightboxImg.style.maxWidth = '';
+    lightboxImg.style.maxHeight = '';
+    lightboxImg.style.width = '';
+    lightboxImg.style.height = '';
+	
+    if (window.innerWidth <= 768) {
+        lightbox.style.height = window.innerHeight + 'px';
+    }
+    
+    updateLightboxCounter();
+}
+
+function closeLightbox(e) {
+    if (e && (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close'))) {
+        const lightbox = document.getElementById('lightbox');
+        lightbox.classList.remove('active');
         
-			} else if (gallery.classList.contains('materials-samples')) {
-				// Pour échantillons : tous les échantillons de cette section
-				currentLightboxGallery = Array.from(gallery.querySelectorAll('.material-sample img'));
+        // Vérifie si en mode paysage avant de rétablir l'overflow
+        if (window.innerWidth > 768 || window.innerWidth <= window.innerHeight) {
+            document.body.style.overflow = '';
+        }
         
-				// Récupérer le nom de la collection d'échantillons
-				const parentSection = gallery.closest('section');
-				const categoryTitle = parentSection ? parentSection.querySelector('h3.collection-category') : null;
-        
-				if (categoryTitle) {
-					const categoryText = categoryTitle.textContent.trim();
-					if (categoryText.includes('ORGANIQUE')) {
-						currentCollectionName = 'Organique';
-					} else if (categoryText.includes('COSMATI')) {
-						currentCollectionName = 'Cosmati';
-					} else if (categoryText.includes('PEAU DE GESSO')) {
-						currentCollectionName = 'Peau de gesso';
-					} else {
-						currentCollectionName = '';
-					}
-				} else {
-					currentCollectionName = '';
-				}
-			} else {
-				// Cas par défaut (photo unique sans galerie)
-				currentLightboxGallery = [img];
-				currentCollectionName = '';
-			}
-    
-			currentLightboxIndex = currentLightboxGallery.indexOf(img);
-			lightboxImg.src = img.src;
-			lightbox.classList.add('active');
-    
-			// Gérer l'affichage des contrôles
-			const controls = document.querySelector('.lightbox-controls');
-			if (currentLightboxGallery.length <= 1) {
-				controls.style.display = 'none';
-			} else {
-				controls.style.display = 'flex';
-			}
-    
-			// Scroll to photo position
-			const imgRect = img.getBoundingClientRect();
-			window.scrollTo(0, window.pageYOffset + imgRect.top - (window.innerHeight / 2));
-    
-			document.body.style.overflow = 'hidden';
-			updateLightboxCounter();
-		}
+        currentCollectionName = '';
+        currentLightboxGallery = [];
+    }
+    if (e) e.stopPropagation();
+}
 
-		function closeLightbox(e) {
-			if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) {
-				const lightbox = document.getElementById('lightbox');
-				lightbox.classList.remove('active');
-				document.body.style.overflow = '';
-				currentCollectionName = '';
-				e.stopPropagation();
-			}
-		}
+function changeLightboxImage(dir, e) {
+    if (e) e.stopPropagation();
+    if (currentLightboxGallery.length <= 1) return;
 
-		function changeLightboxImage(dir, e) {
-			e.stopPropagation();
-			if (currentLightboxGallery.length <= 1) return;
+    currentLightboxIndex = (currentLightboxIndex + dir + currentLightboxGallery.length) % currentLightboxGallery.length;
     
-			currentLightboxIndex = (currentLightboxIndex + dir + currentLightboxGallery.length) % currentLightboxGallery.length;
-			document.getElementById('lightbox-img').src = currentLightboxGallery[currentLightboxIndex].src;
-			updateLightboxCounter();
-		}
+    const lightboxImg = document.getElementById('lightbox-img');
+    lightboxImg.style.opacity = '0';
+    
+    setTimeout(function() {
+        lightboxImg.src = currentLightboxGallery[currentLightboxIndex].src;
+        lightboxImg.style.maxWidth = '';
+        lightboxImg.style.maxHeight = '';
+        lightboxImg.style.width = '';
+        lightboxImg.style.height = '';
+	    lightboxImg.style.opacity = '1';
+        updateLightboxCounter();
+    }, 150);
+}
 
-		function updateLightboxCounter() {
-			const counter = document.getElementById('lightbox-counter');
-    
-			if (currentLightboxGallery.length > 1) {
-				// Afficher "Nom 1/3" ou juste "1/3" si pas de nom
-				if (currentCollectionName) {
-					counter.textContent = `${currentCollectionName} ${currentLightboxIndex + 1}/${currentLightboxGallery.length}`;
-				} else {
-					counter.textContent = `${currentLightboxIndex + 1}/${currentLightboxGallery.length}`;
-				}
-			} else {
-				counter.textContent = '';
-			}
-		}
+function updateLightboxCounter() {
+    const counter = document.getElementById('lightbox-counter');
+    if (currentLightboxGallery.length > 1) {
+        counter.textContent = currentCollectionName 
+            ? currentCollectionName + ' ' + (currentLightboxIndex + 1) + '/' + currentLightboxGallery.length
+            : (currentLightboxIndex + 1) + '/' + currentLightboxGallery.length;
+    } else {
+        counter.textContent = '';
+    }
+}
 
-		// Gestion clavier dans la lightbox (Escape, flèches gauche/droite)
-		document.addEventListener('keydown', function(e) {
-			const lb = document.getElementById('lightbox');
-			if (lb.classList.contains('active')) {
-				if (e.key === 'Escape') {
-					closeLightbox({target: lb});
-				} else if (e.key === 'ArrowLeft' && currentLightboxGallery.length > 1) {
-					changeLightboxImage(-1, e);
-				} else if (e.key === 'ArrowRight' && currentLightboxGallery.length > 1) {
-					changeLightboxImage(1, event);
-				}
-			}
-		});
+// Clavier
+document.addEventListener('keydown', function(e) {
+    const lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('active')) {
+        if (e.key === 'Escape') {
+            closeLightbox({target: lb});
+        } else if (e.key === 'ArrowLeft' && currentLightboxGallery.length > 1) {
+            changeLightboxImage(-1, e);
+        } else if (e.key === 'ArrowRight' && currentLightboxGallery.length > 1) {
+            changeLightboxImage(1, e);
+        }
+    }
+});
 
-		// Initialisation au chargement de la page
-		document.addEventListener('DOMContentLoaded', function() {
-			// Collections et luminaires
-			document.querySelectorAll('.collection-gallery, .luminaire-gallery').forEach(gallery => {
-				gallery.querySelectorAll('.collection-image, .luminaire-image').forEach(img => {
-					img.addEventListener('click', function(e) {
-						e.stopPropagation();
-						openLightbox(this, gallery);
-					});
-				});
-			});
-    
-			// Échantillons de matériaux
-			document.querySelectorAll('.material-sample img').forEach(img => {
-				img.addEventListener('click', function(e) {
-					e.stopPropagation();
-					const samplesContainer = this.closest('.materials-samples');
-					openLightbox(this, samplesContainer);
-				});
-			});
-		});
+// Swipe mobile
+document.addEventListener('touchstart', function(e) {
+    const lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('active')) {
+        touchStartX = e.changedTouches[0].screenX;
+    }
+}, { passive: true });
 
-		// Fonction pour afficher les images de galerie (dots)
-		function showGalleryImage(dot, index) {
-			const card = dot.closest('.collection-card, .luminaire');
-			const dots = card.querySelectorAll('.gallery-dot');
-			const realImageCount = dots.length;
-    
-			const allImages = card.querySelectorAll('.luminaire-image, .collection-image');
-			const images = Array.from(allImages).slice(0, realImageCount);
-    
-			dots.forEach(d => d.classList.remove('active'));
-			dot.classList.add('active');
+document.addEventListener('touchend', function(e) {
+    const lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('active') && currentLightboxGallery.length > 1) {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            changeLightboxImage(diff > 0 ? 1 : -1, null);
+        }
+    }
+}, { passive: true });
 
-			allImages.forEach(img => img.style.display = 'none');
-			if (allImages[index]) {
-				allImages[index].style.display = 'block';
-			}
+// ========================================
+// GALERIES - DOTS CARRÉS
+// ========================================
+function showGalleryImage(dot, index) {
+    const card = dot.closest('.collection-card, .luminaire');
+    const dots = card.querySelectorAll('.gallery-dot');
+    const realImageCount = dots.length;
     
-			dots.forEach(function(d) {
-				if (!d.classList.contains('active')) {
-					d.style.cssText = 'width: 12px !important; height: 12px !important; background-color: rgba(90, 138, 138, 0.15) !important; border: 1px solid rgba(90, 138, 138, 0.6) !important; opacity: 0.7 !important; border-radius: 0 !important; box-shadow: inset 0 0 3px rgba(0,0,0,0.3) !important;';
-				} else {
-					d.style.cssText = 'width: 12px !important; height: 12px !important; background: linear-gradient(135deg, rgba(90, 138, 138, 1) 0%, rgba(70, 110, 110, 0.9) 100%) !important; border: 1.5px solid rgba(90, 138, 138, 1) !important; opacity: 1 !important; border-radius: 0 !important; box-shadow: 0 0 8px rgba(90,138,138,0.8), inset 0 1px 2px rgba(255,255,255,0.2) !important;';
-				}
-			});
-		}
-        
-        // SMOOTH SCROLL
-        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+    const allImages = card.querySelectorAll('.luminaire-image, .collection-image');
+    const images = Array.from(allImages).slice(0, realImageCount);
+    
+    dots.forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+
+    allImages.forEach(img => img.style.display = 'none');
+    if (allImages[index]) {
+        allImages[index].style.display = 'block';
+    }
+    
+    dots.forEach(function(d) {
+        if (!d.classList.contains('active')) {
+            d.style.cssText = 'width: 12px !important; height: 12px !important; background-color: rgba(90, 138, 138, 0.15) !important; border: 1px solid rgba(90, 138, 138, 0.6) !important; opacity: 0.7 !important; border-radius: 0 !important; box-shadow: inset 0 0 3px rgba(0,0,0,0.3) !important;';
+        } else {
+            d.style.cssText = 'width: 12px !important; height: 12px !important; background: linear-gradient(135deg, rgba(90, 138, 138, 1) 0%, rgba(70, 110, 110, 0.9) 100%) !important; border: 1.5px solid rgba(90, 138, 138, 1) !important; opacity: 1 !important; border-radius: 0 !important; box-shadow: 0 0 8px rgba(90,138,138,0.8), inset 0 1px 2px rgba(255,255,255,0.2) !important;';
+        }
+    });
+}
+
+// ========================================
+// INITIALISATION UNIQUE
+// ========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Orientation
+    checkOrientation();
+    window.addEventListener('orientationchange', checkOrientation);
+    window.addEventListener('resize', checkOrientation);
+    
+    // Lightbox galeries
+    document.querySelectorAll('.collection-gallery, .luminaire-gallery').forEach(function(gallery) {
+        gallery.querySelectorAll('.collection-image, .luminaire-image').forEach(function(img) {
+            img.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openLightbox(this, gallery);
             });
         });
-        
-    </script>
+    });
 
-<div id="custom-scrollbar">
-    <div id="custom-scrollbar-thumb"></div>
-</div>
+    // Lightbox matériaux
+    document.querySelectorAll('.material-sample img').forEach(function(img) {
+        img.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openLightbox(this, this.closest('.materials-samples'));
+        });
+    });
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
+    // Dots initiaux CARRÉS
+    document.querySelectorAll('.gallery-dot').forEach(function(dot) {
+       if (!dot.classList.contains('active')) {
+          dot.style.cssText = 'width: 12px !important; height: 12px !important; background-color: rgba(90, 138, 138, 0.15) !important; border: 1px solid rgba(90, 138, 138, 0.6) !important; opacity: 0.7 !important; border-radius: 0 !important; box-shadow: inset 0 0 3px rgba(0,0,0,0.3) !important;';
+      } else {
+          dot.style.cssText = 'width: 12px !important; height: 12px !important; background: linear-gradient(135deg, rgba(90, 138, 138, 1) 0%, rgba(70, 110, 110, 0.9) 100%) !important; border: 1.5px solid rgba(90, 138, 138, 1) !important; opacity: 1 !important; border-radius: 0 !important; box-shadow: 0 0 8px rgba(90,138,138,0.8), inset 0 1px 2px rgba(255,255,255,0.2) !important;';
+    } 
+    });
+
+    // Transition lightbox
+    const lightboxImg = document.getElementById('lightbox-img');
+    if (lightboxImg) {
+        lightboxImg.style.transition = 'opacity 0.2s ease-in-out';
+    }
+    
+    // Smooth scroll
+    document.querySelectorAll('nav a[href^="#"]').forEach(function(anchor) {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+    
+    // Custom scrollbar (desktop uniquement)
     const thumb = document.getElementById('custom-scrollbar-thumb');
     const track = document.getElementById('custom-scrollbar');
     
-    if (!thumb || !track) return;
-    
-    let isDragging = false;
-    let startY = 0;
-	let animationId = null;
+    if (thumb && track && window.innerWidth > 768) {
+        let isDragging = false;
 
-    function syncThumb() {
-        const ratio = window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight);
-        const maxTop = window.innerHeight - thumb.offsetHeight;
-        thumb.style.top = (ratio * maxTop) + 'px';
-    }
+        function syncThumb() {
+            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+            if (scrollableHeight <= 0) return;
+            const ratio = window.pageYOffset / scrollableHeight;
+            const maxTop = window.innerHeight - thumb.offsetHeight;
+            thumb.style.top = (ratio * maxTop) + 'px';
+        }
 
-    function setThumbHeight() {
-        const ratio = window.innerHeight / document.documentElement.scrollHeight;
-        thumb.style.height = Math.max(10, ratio * window.innerHeight) + 'px';
-    }
+        function setThumbHeight() {
+            const ratio = window.innerHeight / document.documentElement.scrollHeight;
+            thumb.style.height = Math.max(30, ratio * window.innerHeight) + 'px';
+        }
 
-    if (window.innerWidth > 768) {
         setThumbHeight();
         syncThumb();
-		
+
         window.addEventListener('scroll', syncThumb, { passive: true });
-		window.addEventListener('resize', setThumbHeight);
-        
-        thumb.addEventListener('mousedown', (e) => {
+        window.addEventListener('resize', function() {
+            setThumbHeight();
+            syncThumb();
+        });
+
+        thumb.addEventListener('mousedown', function(e) {
+            e.preventDefault();
             isDragging = true;
             document.body.style.userSelect = 'none';
-			thumb.style.opacity = '1';
-			
-			const maxTop = window.innerHeight - thumb.offsetHeight;
-            let newTop = e.clientY - track.getBoundingClientRect().top - (thumb.offsetHeight / 2);
-            newTop = Math.max(0, Math.min(newTop, maxTop));
-            thumb.style.top = newTop + 'px';
+            thumb.style.opacity = '1';
         });
-        
-        document.addEventListener('mousemove', (e) => {
+
+        document.addEventListener('mousemove', function(e) {
             if (!isDragging) return;
-            
             const maxTop = window.innerHeight - thumb.offsetHeight;
             let newTop = e.clientY - track.getBoundingClientRect().top - (thumb.offsetHeight / 2);
             newTop = Math.max(0, Math.min(newTop, maxTop));
-			
-			thumb.style.top = newTop + 'px';
-            
-            const scrollRatio = newTop / maxTop;
-            window.scrollTo(0, scrollRatio * (document.documentElement.scrollHeight - window.innerHeight));
+            thumb.style.top = newTop + 'px';
+            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+            window.scrollTo(0, (newTop / maxTop) * scrollableHeight);
         });
-        
-        document.addEventListener('mouseup', () => {
+
+        document.addEventListener('mouseup', function() {
             isDragging = false;
             document.body.style.userSelect = '';
-			thumb.style.opacity = '0.7';
+            thumb.style.opacity = '0.7';
         });
     }
-});
-</script>
-
-<script>
-window.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.gallery-dot').forEach(function(dot) {
-        if (!dot.classList.contains('active')) {
-            dot.style.cssText = 'width: 12px !important; height: 12px !important; background-color: rgba(90, 138, 138, 0.15) !important; border: 1px solid rgba(90, 138, 138, 0.6) !important; opacity: 0.7 !important; border-radius: 0 !important; box-shadow: inset 0 0 3px rgba(0,0,0,0.3) !important;';
-        } else {
-            dot.style.cssText = 'width: 12px !important; height: 12px !important; background: linear-gradient(135deg, rgba(90, 138, 138, 1) 0%, rgba(70, 110, 110, 0.9) 100%) !important; border: 1.5px solid rgba(90, 138, 138, 1) !important; opacity: 1 !important; border-radius: 0 !important; box-shadow: 0 0 8px rgba(90,138,138,0.8), inset 0 1px 2px rgba(255,255,255,0.2) !important;';
-        }
-    });
 });
 </script>
 
